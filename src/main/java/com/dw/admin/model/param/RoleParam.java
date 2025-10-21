@@ -19,7 +19,7 @@ public class RoleParam implements Serializable {
     /**
      * 主键ID
      */
-    private Integer id;
+    private Long id;
 
     /**
      * 角色码

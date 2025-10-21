@@ -119,20 +119,20 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, DwaRole> implements
         }
 
         Long userId = UserContextHolder.getUserId();
-        DwaRole roles = BeanUtil.copyProperties(param, DwaRole.class);
-        if (StrUtil.isEmpty(roles.getStatus())) {
-            roles.setStatus(StatusEnum.ENABLE.getCode());
+        DwaRole dwaRole = BeanUtil.copyProperties(param, DwaRole.class);
+        if (StrUtil.isEmpty(dwaRole.getStatus())) {
+            dwaRole.setStatus(StatusEnum.ENABLE.getCode());
         }
-        roles.setCreateUser(userId);
-        roles.setUpdateUser(userId);
+        dwaRole.setCreateUser(userId);
+        dwaRole.setUpdateUser(userId);
 
-        if (roles.getId() == null) {
-            rolesMapper.insert(roles);
+        if (dwaRole.getId() == null) {
+            rolesMapper.insert(dwaRole);
         }  else {
-            roles.setUpdateUser(null);
-            rolesMapper.updateById(roles);
+            dwaRole.setUpdateUser(null);
+            rolesMapper.updateById(dwaRole);
         }
-        return String.valueOf(roles.getId());
+        return String.valueOf(dwaRole.getId());
     }
 
     /**

@@ -28,8 +28,8 @@ public class DwaRole implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    private Long id;
 
     /**
      * 角色码

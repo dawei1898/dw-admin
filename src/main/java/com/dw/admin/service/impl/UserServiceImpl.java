@@ -137,29 +137,33 @@ public class UserServiceImpl implements UserService {
             DwaUser existUser = usersMapper.selectOne(existUserQuery);
             ValidateUtil.isTure(existUser != null, "用户名已存在!");
             // 保存用户
-            DwaUser users = DwaUser.builder()
+            DwaUser user = DwaUser.builder()
                     .name(param.getName())
                     .password(PasswordUtils.encode(param.getPassword()))
                     .email(param.getEmail())
+                    .phone(param.getPhone())
                     .avatarUrl(param.getAvatarUrl())
                     .build();
-            usersMapper.insert(users);
-            userId = users.getId();
+            usersMapper.insert(user);
+            userId = user.getId();
         }
         // 修改用户
         else {
-            DwaUser users = usersMapper.selectById(userId);
-            if (users == null) {
+            DwaUser user = usersMapper.selectById(userId);
+            if (user == null) {
                 throw new BizException("用户不存在!");
             }
             if (StrUtil.isNotBlank(param.getEmail())) {
-                users.setEmail(param.getEmail());
+                user.setEmail(param.getEmail());
+            }
+            if (StrUtil.isNotBlank(param.getPhone())) {
+                user.setPhone(param.getPhone());
             }
             if (StrUtil.isNotBlank(param.getAvatarUrl())) {
-                users.setAvatarUrl(param.getAvatarUrl());
+                user.setAvatarUrl(param.getAvatarUrl());
             }
-            users.setUpdateTime(LocalDateTime.now());
-            usersMapper.updateById(users);
+            user.setUpdateTime(LocalDateTime.now());
+            usersMapper.updateById(user);
         }
         return userId;
     }
@@ -173,18 +177,21 @@ public class UserServiceImpl implements UserService {
         Long userId = UserContextHolder.getUserId();
 
         // 修改用户
-        DwaUser users = usersMapper.selectById(userId);
-        if (users == null) {
+        DwaUser user = usersMapper.selectById(userId);
+        if (user == null) {
             throw new BizException("用户不存在!");
         }
         if (StrUtil.isNotBlank(param.getEmail())) {
-            users.setEmail(param.getEmail());
+            user.setEmail(param.getEmail());
+        }
+        if (StrUtil.isNotBlank(param.getPhone())) {
+            user.setPhone(param.getPhone());
         }
         if (StrUtil.isNotBlank(param.getAvatarUrl())) {
-            users.setAvatarUrl(param.getAvatarUrl());
+            user.setAvatarUrl(param.getAvatarUrl());
         }
-        users.setUpdateTime(LocalDateTime.now());
-        usersMapper.updateById(users);
+        user.setUpdateTime(LocalDateTime.now());
+        usersMapper.updateById(user);
         return userId;
     }
 
@@ -208,11 +215,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVo queryUser(Long userId) {
         ValidateUtil.isNull(userId, "userId不能为空！");
-        DwaUser users = usersMapper.selectById(userId);
-        if (users == null) {
+        DwaUser user = usersMapper.selectById(userId);
+        if (user == null) {
             throw new BizException("用户不存在!");
         }
-        return BeanUtil.copyProperties(users, UserVo.class);
+        return BeanUtil.copyProperties(user, UserVo.class);
     }
 
 
@@ -229,6 +236,9 @@ public class UserServiceImpl implements UserService {
         // 邮箱模糊搜索
         queryWrapper.like(StrUtil.isNotBlank(param.getEmail()),
                 DwaUser::getEmail, param.getEmail());
+        // 手机模糊搜索
+        queryWrapper.like(StrUtil.isNotBlank(param.getPhone()),
+                DwaUser::getPhone, param.getPhone());
         // 默认排序：更新时间降序
         if (StrUtil.isAllBlank(param.getCreateTimeSort(), param.getUpdateTimeSort())) {
             queryWrapper.orderByDesc(DwaUser::getUpdateTime);
