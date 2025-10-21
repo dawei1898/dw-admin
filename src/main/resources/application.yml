@@ -24,3 +24,20 @@ logging:
   config: classpath:logback/logback-spring.xml
   level:
     com.dw.admin.dao: debug
+
+dwa:
+  auth:
+    cache-type: DB
+    secret: wq8wqh87a6f-8hslu9wedhsad-89dsaud8j-d6dy-dsja
+  redis:
+    url: localhost:6379
+    password:
+  file:
+    # 阿里云对象存储 OSS 配置
+    oss:
+      access-key: xxxxxx
+      secret-key: xxxxxx
+      endpoint: xxxxxx.aliyuncs.com
+      bucket: xxxxxx-oss-bucket
+      prefix-path: xxxxxx/
+      url-expires: 604800
