@@ -7,23 +7,37 @@ package com.dw.admin.components.auth;
  */
 public class AuthConstant {
 
+    /** 配置属性前缀 */
+    public static final String  AUTH_PROPERTIES_PREFIX = "dwa.auth";
+
+    public static final String  AUTH_PROPERTIES_ENABLE = "dwa.auth.enable";
+
+    public static final String  AUTH_PROPERTIES_CACHE_TYPE= "dwa.auth.cache-type";
+
+    /** 鉴权过滤器顺序 */
+    public static final int AUTH_ORDER = 1;
+
     public static final String TOKEN_KEY = "Authorization";
 
     public static final String TOKEN_VALUE_PREFIX = "Bearer ";
 
-    /** 令牌秘钥 */
-    public final static String SECRET = "ki9ijeffredsklm9iujnb0o8y5iuh98jnju76o9dsx3wqasdfguy76g";
-
-    /** * 用户ID字段 */
-    public static final String USER_ID = "user_id";
 
     /** 登录用户 */
     public static final String LOGIN_USER = "login_user";
 
-    /** token失效时间(ms) */
-    public static final long EXPIRE_TIME = 24 * 60 * 60 * 1000;
+    /** token失效时间(s) */
+    public static final long DEFAULT_EXPIRE_TIME = 24 * 60 * 60;
+
+    /** token 存储类型 Redis */
+    public static final String CACHE_TYPE_REDIS = "redis";
+
+    /** token 存储类型 DB */
+    public static final String CACHE_TYPE_DB = "DB";
+
+    /** 清除定时任务 */
+    public static final String CLEAN_CRON = "0 0 1 * * ?";
 
 
-    public static final int AUTH_ORDER = 1;
+
 
 }

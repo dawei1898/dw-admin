@@ -8,6 +8,7 @@ class DwAdminAppTests {
 
     @Test
     void contextLoads() {
+        System.out.println("SpringBootTest run ");
     }
 
 }

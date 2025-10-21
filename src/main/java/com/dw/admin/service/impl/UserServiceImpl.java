@@ -13,10 +13,7 @@ import com.dw.admin.common.exception.BizException;
 import com.dw.admin.common.utils.PasswordUtils;
 import com.dw.admin.common.utils.RequestHolder;
 import com.dw.admin.common.utils.ValidateUtil;
-import com.dw.admin.components.auth.AuthConstant;
-import com.dw.admin.components.auth.AuthUtil;
-import com.dw.admin.components.auth.LoginUser;
-import com.dw.admin.components.auth.UserContextHolder;
+import com.dw.admin.components.auth.*;
 import com.dw.admin.dao.UserMapper;
 import com.dw.admin.model.entity.DwaUser;
 import com.dw.admin.model.param.LoginParam;
@@ -47,6 +44,10 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private LoginLogService loginLogServiceImpl;
+
+    @Resource
+    private AuthProperties authProperties;
+
 
 
 
@@ -93,7 +94,7 @@ public class UserServiceImpl implements UserService {
                 .username(user.getName())
                 .ipAddress(RequestHolder.getHttpServletRequestIpAddress())
                 .loginTime(System.currentTimeMillis())
-                .expireTime(System.currentTimeMillis() + AuthConstant.EXPIRE_TIME)
+                .expireTime(System.currentTimeMillis() + authProperties.getExpireTime() * 1000)
                 .build();
 
         // 生成token

@@ -1,9 +1,11 @@
 package com.dw.admin.components.auth;
 
 
+import com.dw.admin.common.utils.SpringContextHolder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Map;
@@ -15,7 +17,16 @@ import java.util.Map;
  */
 public class JwtUtils {
 
-    public static SecretKey SECRET_KEY = Keys.hmacShaKeyFor(AuthConstant.SECRET.getBytes());
+    public static final SecretKey SECRET_KEY;
+
+    static {
+        AuthProperties authProperties = SpringContextHolder.getBean(AuthProperties.class);
+        if (authProperties != null && StringUtils.isNotEmpty(authProperties.getSecret())) {
+            SECRET_KEY = Keys.hmacShaKeyFor(authProperties.getSecret().getBytes());
+        } else {
+            throw new RuntimeException("auth SECRET is null !!!");
+        }
+    }
 
 
     /**
