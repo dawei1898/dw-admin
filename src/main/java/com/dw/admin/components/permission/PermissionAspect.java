@@ -1,4 +1,4 @@
-package com.dw.admin.components.permissions;
+package com.dw.admin.components.permission;
 
 
 import cn.hutool.core.collection.CollectionUtil;
@@ -28,16 +28,16 @@ import java.util.List;
 @Aspect
 @Component
 @Order(10)
-public class PermissionsAspect {
+public class PermissionAspect {
 
     @Resource
     private RoleService roleServiceImpl;
 
-    @Pointcut("@annotation(com.dw.admin.components.permissions.Permissions)")
+    @Pointcut("@annotation(com.dw.admin.components.permission.Permission)")
     public void permissionsPointcut() {}
 
     @Before("permissionsPointcut() && @annotation(permissions)")
-    public void doBeforeAdvice(JoinPoint joinPoint, Permissions permissions) throws Throwable {
+    public void doBeforeAdvice(JoinPoint joinPoint, Permission permissions) throws Throwable {
 
         boolean hasPermissions = true;
         // TODO 校验用户的操作码权限

@@ -5,7 +5,7 @@ import com.dw.admin.common.entity.Response;
 import com.dw.admin.components.auth.Auth;
 import com.dw.admin.components.auth.UserContextHolder;
 import com.dw.admin.components.log.Log;
-import com.dw.admin.components.permissions.Permissions;
+import com.dw.admin.components.permission.Permission;
 import com.dw.admin.model.param.LoginParam;
 import com.dw.admin.model.param.RegisterParam;
 import com.dw.admin.model.param.UserPageParam;
@@ -66,7 +66,7 @@ public class UserController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @PostMapping("/save")
     public Response<Long> saveUser(@RequestBody UserParam param){
         Long userId = userServiceImpl.saveUser(param);
@@ -89,7 +89,7 @@ public class UserController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @DeleteMapping("/delete/{userId}")
     public Response<Boolean> deleteUser(@PathVariable String userId){
         Boolean deleted = userServiceImpl.deleteUser(Long.valueOf(userId));
@@ -124,7 +124,7 @@ public class UserController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @PostMapping("/list")
     public Response<PageResult<UserVo>> queryUserPage(@RequestBody UserPageParam param){
         PageResult<UserVo> userVos = userServiceImpl.queryUserPage(param);

@@ -4,7 +4,7 @@ import com.dw.admin.common.entity.PageResult;
 import com.dw.admin.common.entity.Response;
 import com.dw.admin.components.auth.Auth;
 import com.dw.admin.components.log.Log;
-import com.dw.admin.components.permissions.Permissions;
+import com.dw.admin.components.permission.Permission;
 import com.dw.admin.model.param.RolePageParam;
 import com.dw.admin.model.param.RoleParam;
 import com.dw.admin.model.param.UserRoleParam;
@@ -35,7 +35,7 @@ public class RoleController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @PostMapping("/list")
     public Response<PageResult<RoleVo>> queryRolePage(@RequestBody RolePageParam param) {
         PageResult<RoleVo> pageResult = roleServiceImpl.queryRolePage(param);
@@ -47,7 +47,7 @@ public class RoleController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @GetMapping("/{id}")
     public Response<RoleVo> queryRole(@PathVariable String id) {
         RoleVo roleVo = roleServiceImpl.queryRole(id);
@@ -59,7 +59,7 @@ public class RoleController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @PostMapping("/save")
     public Response<String> saveRole(@RequestBody @Validated RoleParam param) {
         String id = roleServiceImpl.saveRole(param);
@@ -72,7 +72,7 @@ public class RoleController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @DeleteMapping("/delete/{id}")
     public Response<Void> deleteRole(@PathVariable String id) {
         roleServiceImpl.deleteRole(id);
@@ -84,7 +84,7 @@ public class RoleController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @GetMapping("/user/{userId}")
     public Response<List<RoleVo>> queryUserRoles(@PathVariable String userId) {
         List<RoleVo> roleList = roleServiceImpl.queryUserRoles(userId);
@@ -96,7 +96,7 @@ public class RoleController {
      */
     @Log
     @Auth
-    @Permissions(roles = "admin")
+    @Permission(roles = "admin")
     @PostMapping("/user/save")
     public Response<Void> saveUserRoles(@RequestBody @Validated UserRoleParam param) {
         roleServiceImpl.saveUserRoles(param);
