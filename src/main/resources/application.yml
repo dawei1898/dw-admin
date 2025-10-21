@@ -4,3 +4,23 @@ server:
 spring:
   application:
       name: dw-admin-app
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dwa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
+    username:
+    password:
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 5MB
+
+# mybatis-plus
+mybatis-plus:
+  mapperLocations: classpath:mapper/*.xml
+
+
+# log??
+logging:
+  config: classpath:logback/logback-spring.xml
+  level:
+    com.dw.admin.dao: debug
