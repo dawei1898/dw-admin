@@ -55,16 +55,19 @@ CREATE TABLE `dwa_user_role` (
 
 DROP TABLE IF EXISTS `dwa_file`;
 CREATE TABLE `dwa_file` (
-    `file_id` bigint(20) NOT NULL COMMENT '文件ID',
-    `file_name` varchar(255) NOT NULL COMMENT '文件名',
-    `file_type` varchar(256) DEFAULT NULL COMMENT '文件类型',
-    `file_path` varchar(255) DEFAULT NULL COMMENT '文件路径',
-    `file_url` varchar(512) DEFAULT NULL COMMENT '文件 URL',
-    `create_user` bigint(20) DEFAULT NULL COMMENT '创建人',
-    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+    `file_id` bigint NOT NULL COMMENT '文件ID',
+    `file_name` varchar(255) NULL COMMENT '文件名',
+    `file_type` varchar(32) NULL COMMENT '文件类型',
+    `file_size` bigint NULL COMMENT '文件大小（B）',
+    `file_path` varchar(255) NULL COMMENT '文件路径',
+    `file_url` varchar(512) NULL COMMENT '文件 URL',
+    `url_expires` integer(11) NULL COMMENT '文件 url 过期时间（ms）',
+    `create_user` bigint NULL COMMENT '创建人',
+    `update_user` bigint NULL COMMENT '修改人',
+    `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+    `update_time` datetime NULL DEFAULT NULL COMMENT '修改时间',
     PRIMARY KEY (`file_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文件信息表';
-
 
 
 -- 登录日志表

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 @TableName("dwa_file")
 public class DwaFile implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -42,6 +44,11 @@ public class DwaFile implements Serializable {
     private String fileType;
 
     /**
+     * 文件大小（B）
+     */
+    private Long fileSize;
+
+    /**
      * 文件路径
      */
     private String filePath;
@@ -52,13 +59,29 @@ public class DwaFile implements Serializable {
     private String fileUrl;
 
     /**
+     * 文件 url 过期时间（ms）
+     */
+    private Integer urlExpires;
+
+    /**
      * 创建人
      */
     private Long createUser;
+
+    /**
+     * 修改人
+     */
+    private Long updateUser;
 
     /**
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 }

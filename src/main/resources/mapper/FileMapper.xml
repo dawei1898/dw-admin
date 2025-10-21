@@ -7,15 +7,19 @@
         <id column="file_id" property="fileId" />
         <result column="file_name" property="fileName" />
         <result column="file_type" property="fileType" />
+        <result column="file_size" property="fileSize" />
         <result column="file_path" property="filePath" />
         <result column="file_url" property="fileUrl" />
+        <result column="url_expires" property="urlExpires" />
         <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        file_id, file_name, file_type, file_path, file_url, create_user, create_time
+        file_id, file_name, file_type, file_size, file_path, file_url, url_expires, create_user, update_user, create_time, update_time
     </sql>
 
 </mapper>
