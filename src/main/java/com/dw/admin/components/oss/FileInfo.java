@@ -1,7 +1,5 @@
-package com.dw.admin.model.vo;
+package com.dw.admin.components.oss;
 
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
- * 文件信息返参
+ * 上传文件返回的信息
  *
  * @author dawei
  */
@@ -20,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileVo implements Serializable {
+public class FileInfo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -42,19 +39,5 @@ public class FileVo implements Serializable {
 
     /** 文件URL */
     private String url;
-
-    /** 创建人 */
-    private Long createUser;
-
-    /** 修改人 */
-    private Long updateUser;
-
-    /** 创建时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime createTime;
-
-    /** 修改时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime updateTime;
 
 }

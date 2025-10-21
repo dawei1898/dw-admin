@@ -14,10 +14,8 @@ import java.io.Serializable;
 @Data
 public class FilePageParam extends PageParam implements Serializable {
 
-    /**
-     * 文件名称
-     */
-    private String fileName;
+    /** 文件名称 */
+    private String name;
 
 
     /**

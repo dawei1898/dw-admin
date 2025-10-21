@@ -5,19 +5,16 @@ import com.dw.admin.common.entity.Response;
 import com.dw.admin.components.auth.Auth;
 import com.dw.admin.components.auth.UserContextHolder;
 import com.dw.admin.components.log.Log;
+import com.dw.admin.components.oss.FileInfo;
 import com.dw.admin.model.param.FilePageParam;
 import com.dw.admin.model.vo.FileVo;
 import com.dw.admin.service.FileService;
 import jakarta.annotation.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * <p>
- * 文件信息表 前端控制器
- * </p>
+ * 文件服务 前端控制器
  *
  * @author dawei
  */
@@ -33,10 +30,10 @@ public class FileController {
      */
     @Auth
     @PostMapping("/upload")
-    public Response<FileVo> uploadFile(@RequestParam(value = "file") MultipartFile file){
+    public Response<FileInfo> uploadFile(@RequestParam(value = "file") MultipartFile file){
         Long userId = UserContextHolder.getUserId();
-        FileVo fileVo = fileServiceImpl.uploadFile(file, userId);
-        return Response.success(fileVo);
+        FileInfo fileInfo = fileServiceImpl.uploadFile(file, userId);
+        return Response.success(fileInfo);
     }
 
     /**
@@ -69,14 +66,6 @@ public class FileController {
     public Response<FileVo> queryFileInfo(@PathVariable String fileId){
         FileVo fileVo = fileServiceImpl.queryFileInfo(Long.valueOf(fileId));
         return Response.success(fileVo);
-    }
-
-    /**
-     * 获取图片
-     */
-    @GetMapping("/images/{filename:.+}")
-    public ResponseEntity<UrlResource> getImage(@PathVariable String filename) {
-        return fileServiceImpl.getImage(filename);
     }
 
     /**
