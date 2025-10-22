@@ -23,5 +23,8 @@ public class PermissionProperties {
     /** 权限缓存类型 redis 或 local */
     private String cacheType = PermissionConstant.CACHE_TYPE_LOCAL;
 
+    /** token失效时间(s) */
+    private long expireTime = PermissionConstant.DEFAULT_EXPIRE_TIME;
+
 
 }

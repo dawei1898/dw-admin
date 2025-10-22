@@ -17,11 +17,11 @@ public interface PermissionCacheHelper {
     /**
      * 保存角色码
      */
-    boolean putRoles(String  userId, List<String> roleCodes);
+    void putRoles(String  userId, List<String> roleCodes);
 
     /**
      * 删除角色码
      */
-    boolean remove(String userId);
+    void removeRoles(String userId);
 
 }

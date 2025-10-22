@@ -24,6 +24,9 @@ public class PermissionConstant {
     /** 权限存储类型  本地 */
     public static final String CACHE_TYPE_LOCAL = "local";
 
+    /** 缓存失效时间(s) */
+    public static final long DEFAULT_EXPIRE_TIME =  60;
+
 
 
 

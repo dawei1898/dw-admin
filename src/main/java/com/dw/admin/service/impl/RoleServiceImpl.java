@@ -14,6 +14,7 @@ import com.dw.admin.common.enums.StatusEnum;
 import com.dw.admin.common.exception.BizException;
 import com.dw.admin.common.utils.ValidateUtil;
 import com.dw.admin.components.auth.UserContextHolder;
+import com.dw.admin.components.permission.PermissionCacheHelper;
 import com.dw.admin.dao.RoleMapper;
 import com.dw.admin.dao.UserRoleMapper;
 import com.dw.admin.model.entity.DwaRole;
@@ -24,6 +25,8 @@ import com.dw.admin.model.param.UserRoleParam;
 import com.dw.admin.model.vo.RoleVo;
 import com.dw.admin.service.RoleService;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,14 +39,22 @@ import java.util.List;
  *
  * @author dawei
  */
+
+@Slf4j
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, DwaRole> implements RoleService {
+
+    @Resource
+    private ThreadPoolTaskExecutor taskExecutor;
 
     @Resource
     private RoleMapper rolesMapper;
 
     @Resource
     private UserRoleMapper userRoleMapper;
+
+    @Resource
+    private PermissionCacheHelper permissionCacheHelper;
 
 
     /**
@@ -192,6 +203,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, DwaRole> implements
             }).toList();
             userRoleMapper.insert(userRoles);
         }
+
+        // 清除权限缓存
+        taskExecutor.execute(() -> {
+            permissionCacheHelper.removeRoles(String.valueOf(userId));
+            log.info("清除权限缓存, userId:{}", userId);
+        });
     }
 
     /**

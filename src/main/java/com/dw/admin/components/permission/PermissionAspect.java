@@ -64,7 +64,9 @@ public class PermissionAspect {
             List<String> roleCodes = permissionCacheHelper.getRoles(String.valueOf(userId));
             if (roleCodes == null) {
                 roleCodes = roleServiceImpl.queryRoleCodes(userId);
-                permissionCacheHelper.putRoles(String.valueOf(userId), roleCodes);
+                if (roleCodes != null) {
+                    permissionCacheHelper.putRoles(String.valueOf(userId), roleCodes);
+                }
             }
 
             if (CollectionUtil.isNotEmpty(roleCodes)) {
