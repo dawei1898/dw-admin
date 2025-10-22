@@ -4,6 +4,7 @@ import com.dw.admin.common.entity.PageResult;
 import com.dw.admin.common.entity.Response;
 import com.dw.admin.components.auth.Auth;
 import com.dw.admin.components.auth.UserContextHolder;
+import com.dw.admin.components.limiter.Limiter;
 import com.dw.admin.components.log.Log;
 import com.dw.admin.components.permission.Permission;
 import com.dw.admin.model.param.LoginParam;
@@ -33,6 +34,7 @@ public class UserController {
      * 注册用户
      */
     @Log
+    @Limiter(rateOfIp = 1.0 / 10)
     @PostMapping("/register")
     public Response<Void> register(@RequestBody @Validated RegisterParam param){
         userServiceImpl.register(param);
@@ -44,6 +46,7 @@ public class UserController {
      * 用户登录
      */
     @Log
+    @Limiter(rateOfIp = 1.0 / 2)
     @PostMapping("/login")
     public Response<String> login(@RequestBody @Validated LoginParam param){
         String token = userServiceImpl.login(param);
