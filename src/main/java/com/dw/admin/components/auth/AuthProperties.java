@@ -21,7 +21,7 @@ public class AuthProperties {
     private Boolean enable = true;
 
     /** 令牌秘钥 */
-    private String secret;
+    private String secret = AuthConstant.DEFAULT_SECRET;
 
     /** token 存储类型 redis 或 DB */
     private String cacheType = AuthConstant.CACHE_TYPE_DB;

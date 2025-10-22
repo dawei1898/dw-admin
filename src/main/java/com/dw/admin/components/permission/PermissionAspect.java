@@ -9,13 +9,17 @@ import com.dw.admin.components.auth.UserContextHolder;
 import com.dw.admin.service.RoleService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,11 +31,20 @@ import java.util.List;
 @Slf4j
 @Aspect
 @Component
-@Order(10)
+@Order(PermissionConstant.PERMISSION_ORDER)
+@ConditionalOnProperty(
+        name = PermissionConstant.PERMISSION_PROPERTIES_ENABLE,
+        matchIfMissing = true
+)
 public class PermissionAspect {
 
     @Resource
     private RoleService roleServiceImpl;
+
+    @Resource
+    private PermissionCacheHelper permissionCacheHelper;
+
+
 
     @Pointcut("@annotation(com.dw.admin.components.permission.Permission)")
     public void permissionsPointcut() {}
@@ -47,7 +60,13 @@ public class PermissionAspect {
         if (CollectionUtil.isNotEmpty(allowedRoleCodes)) {
             hasPermissions = false;
             Long userId = UserContextHolder.getUserId();
-            List<String> roleCodes = roleServiceImpl.queryRoleCodes(userId);
+
+            List<String> roleCodes = permissionCacheHelper.getRoles(String.valueOf(userId));
+            if (roleCodes == null) {
+                roleCodes = roleServiceImpl.queryRoleCodes(userId);
+                permissionCacheHelper.putRoles(String.valueOf(userId), roleCodes);
+            }
+
             if (CollectionUtil.isNotEmpty(roleCodes)) {
                 // 超管
                 if (CollectionUtil.containsAny(roleCodes, List.of(RolesEnum.ADMIN.getCode()))) {

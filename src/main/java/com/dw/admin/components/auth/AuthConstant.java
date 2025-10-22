@@ -25,6 +25,9 @@ public class AuthConstant {
     /** 登录用户 */
     public static final String LOGIN_USER = "login_user";
 
+    /** 令牌秘钥 */
+    public static final String DEFAULT_SECRET = "oujyu6tHmgPeCG*uYGL9JhgR5BdKzBiusBZ048iuAgfS5QP";
+
     /** token失效时间(s) */
     public static final long DEFAULT_EXPIRE_TIME = 24 * 60 * 60;
 
