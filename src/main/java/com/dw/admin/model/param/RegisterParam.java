@@ -26,7 +26,7 @@ public class RegisterParam implements Serializable {
 
     /** 密码 */
     @NotBlank
-    @Size(min = 6,  max = 15 , message = "长度大于 5，小于 16")
+    @Size(min = 6, max = 15, message = "密码长度在 6-15 之间")
     private String password;
 
     /** 验证码 */
