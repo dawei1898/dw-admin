@@ -3,7 +3,6 @@ package com.dw.admin.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,6 +24,7 @@ import com.dw.admin.service.LoginLogService;
 import com.dw.admin.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -154,13 +154,13 @@ public class UserServiceImpl implements UserService {
             if (user == null) {
                 throw new BizException("用户不存在!");
             }
-            if (StrUtil.isNotBlank(param.getEmail())) {
+            if (StringUtils.isNotBlank(param.getEmail())) {
                 user.setEmail(param.getEmail());
             }
-            if (StrUtil.isNotBlank(param.getPhone())) {
+            if (StringUtils.isNotBlank(param.getPhone())) {
                 user.setPhone(param.getPhone());
             }
-            if (StrUtil.isNotBlank(param.getAvatarUrl())) {
+            if (StringUtils.isNotBlank(param.getAvatarUrl())) {
                 user.setAvatarUrl(param.getAvatarUrl());
             }
             user.setUpdateTime(LocalDateTime.now());
@@ -182,13 +182,13 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new BizException("用户不存在!");
         }
-        if (StrUtil.isNotBlank(param.getEmail())) {
+        if (StringUtils.isNotBlank(param.getEmail())) {
             user.setEmail(param.getEmail());
         }
-        if (StrUtil.isNotBlank(param.getPhone())) {
+        if (StringUtils.isNotBlank(param.getPhone())) {
             user.setPhone(param.getPhone());
         }
-        if (StrUtil.isNotBlank(param.getAvatarUrl())) {
+        if (StringUtils.isNotBlank(param.getAvatarUrl())) {
             user.setAvatarUrl(param.getAvatarUrl());
         }
         user.setUpdateTime(LocalDateTime.now());
@@ -232,16 +232,16 @@ public class UserServiceImpl implements UserService {
         ValidateUtil.isNull(param, "参数不能为空!");
         LambdaQueryWrapper<DwaUser> queryWrapper = new LambdaQueryWrapper<>();
         // 名称模糊搜索
-        queryWrapper.like(StrUtil.isNotBlank(param.getName()),
+        queryWrapper.like(StringUtils.isNotBlank(param.getName()),
                 DwaUser::getName, param.getName());
         // 邮箱模糊搜索
-        queryWrapper.like(StrUtil.isNotBlank(param.getEmail()),
+        queryWrapper.like(StringUtils.isNotBlank(param.getEmail()),
                 DwaUser::getEmail, param.getEmail());
         // 手机模糊搜索
-        queryWrapper.like(StrUtil.isNotBlank(param.getPhone()),
+        queryWrapper.like(StringUtils.isNotBlank(param.getPhone()),
                 DwaUser::getPhone, param.getPhone());
         // 默认排序：更新时间降序
-        if (StrUtil.isAllBlank(param.getCreateTimeSort(), param.getUpdateTimeSort())) {
+        if (StringUtils.isAllBlank(param.getCreateTimeSort(), param.getUpdateTimeSort())) {
             queryWrapper.orderByDesc(DwaUser::getUpdateTime);
         } else {
             // 创建时间排序

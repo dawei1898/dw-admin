@@ -3,7 +3,6 @@ package com.dw.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -26,6 +25,7 @@ import com.dw.admin.model.vo.RoleVo;
 import com.dw.admin.service.RoleService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
@@ -65,16 +65,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, DwaRole> implements
         ValidateUtil.isNull(param, "参数不能为空!");
         LambdaQueryWrapper<DwaRole> queryWrapper = new LambdaQueryWrapper<>();
         // 角色码模糊搜索
-        queryWrapper.like(StrUtil.isNotBlank(param.getRoleCode()),
+        queryWrapper.like(StringUtils.isNotBlank(param.getRoleCode()),
                 DwaRole::getRoleCode, param.getRoleCode());
         // 名称模糊搜索
-        queryWrapper.like(StrUtil.isNotBlank(param.getRoleName()),
+        queryWrapper.like(StringUtils.isNotBlank(param.getRoleName()),
                 DwaRole::getRoleName, param.getRoleName());
         // 状态搜索
-        queryWrapper.eq(StrUtil.isNotBlank(param.getStatus()),
+        queryWrapper.eq(StringUtils.isNotBlank(param.getStatus()),
                 DwaRole::getStatus, param.getStatus());
         // 默认排序：更新时间降序
-        if (StrUtil.isAllBlank(param.getCreateTimeSort(), param.getUpdateTimeSort())) {
+        if (StringUtils.isAllBlank(param.getCreateTimeSort(), param.getUpdateTimeSort())) {
             queryWrapper.orderByDesc(DwaRole::getUpdateTime);
         } else {
             // 创建时间排序
@@ -131,7 +131,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, DwaRole> implements
 
         Long userId = UserContextHolder.getUserId();
         DwaRole dwaRole = BeanUtil.copyProperties(param, DwaRole.class);
-        if (StrUtil.isEmpty(dwaRole.getStatus())) {
+        if (StringUtils.isEmpty(dwaRole.getStatus())) {
             dwaRole.setStatus(StatusEnum.ENABLE.getCode());
         }
         dwaRole.setCreateUser(userId);

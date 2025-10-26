@@ -1,7 +1,6 @@
 package com.dw.admin.service.impl;
 
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dw.admin.common.entity.PageResult;
@@ -179,10 +178,16 @@ public class FileServiceImpl implements FileService {
         ValidateUtil.isNull(param, "参数不能为空!");
         LambdaQueryWrapper<DwaFile> queryWrapper = new LambdaQueryWrapper<>();
         // 文件名称模糊搜索
-        queryWrapper.like(StrUtil.isNotBlank(param.getName()),
+        queryWrapper.like(StringUtils.isNotBlank(param.getName()),
                 DwaFile::getFileName, param.getName());
+        // 文件类型模糊搜索
+        queryWrapper.like(StringUtils.isNotBlank(param.getType()),
+                    DwaFile::getFileType, param.getType());
+        // 文件路径模糊搜索
+        queryWrapper.like(StringUtils.isNotBlank(param.getPath()),
+                    DwaFile::getFilePath, param.getPath());
         // 默认排序：创建时间降序
-        if (StrUtil.isEmpty(param.getCreateTimeSort())) {
+        if (StringUtils.isAllEmpty(param.getCreateTimeSort(), param.getUpdateTimeSort())) {
             queryWrapper.orderByDesc(DwaFile::getCreateTime);
         } else {
             // 创建时间排序
@@ -190,6 +195,12 @@ public class FileServiceImpl implements FileService {
                 queryWrapper.orderByAsc(DwaFile::getCreateTime);
             } else if (SortEnum.DESC.getCode().equalsIgnoreCase(param.getCreateTimeSort())) {
                 queryWrapper.orderByDesc(DwaFile::getCreateTime);
+            }
+            // 更新时间排序
+            if (SortEnum.ASC.getCode().equalsIgnoreCase(param.getUpdateTimeSort())) {
+                queryWrapper.orderByAsc(DwaFile::getUpdateTime);
+            } else if (SortEnum.DESC.getCode().equalsIgnoreCase(param.getUpdateTimeSort())) {
+                queryWrapper.orderByDesc(DwaFile::getUpdateTime);
             }
         }
         // 分页查询

@@ -1,7 +1,6 @@
 package com.dw.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -18,9 +17,9 @@ import com.dw.admin.model.vo.LoginLogVo;
 import com.dw.admin.service.LoginLogService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,7 +59,7 @@ public class LoginLogServiceImpl implements LoginLogService {
             String os =  "";
             // 浏览器
             String browser =  "";
-            if (StringUtils.hasText(userAgentStr)) {
+            if (StringUtils.isNotEmpty(userAgentStr)) {
                 UserAgent userAgent = UserAgentUtil.parse(userAgentStr);
                 browser = String.format("%s %s", userAgent.getBrowser(), userAgent.getVersion());
                 os = String.format("%s %s %s", userAgent.getPlatform(), userAgent.getOs(), userAgent.getOsVersion());
@@ -92,10 +91,10 @@ public class LoginLogServiceImpl implements LoginLogService {
         ValidateUtil.isNull(param, "参数不能为空!");
         LambdaQueryWrapper<DwaLoginLog> queryWrapper = new LambdaQueryWrapper<>();
         // 用户名模糊搜索
-        queryWrapper.like(StrUtil.isNotBlank(param.getUsername()),
+        queryWrapper.like(StringUtils.isNotBlank(param.getUsername()),
                 DwaLoginLog::getUsername, param.getUsername());
         // 登录 IP 糊搜索
-        queryWrapper.like(StrUtil.isNotBlank(param.getIpAddress()),
+        queryWrapper.like(StringUtils.isNotBlank(param.getIpAddress()),
                 DwaLoginLog::getIpAddr, param.getIpAddress());
 
         // 登录时间排序
