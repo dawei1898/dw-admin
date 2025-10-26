@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
                 .tokenId(IdUtil.fastSimpleUUID())
                 .userId(user.getId())
                 .username(user.getName())
-                .ipAddress(RequestHolder.getHttpServletRequestIpAddress())
+                .ipAddr(RequestHolder.getHttpServletRequestIpAddress())
                 .loginTime(System.currentTimeMillis())
                 .expireTime(System.currentTimeMillis() + authProperties.getExpireTime() * 1000)
                 .build();

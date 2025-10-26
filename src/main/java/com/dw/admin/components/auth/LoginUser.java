@@ -43,6 +43,6 @@ public class LoginUser implements java.io.Serializable {
     private Long expireTime;
 
     /** 登录IP地址 */
-    private String ipAddress;
+    private String ipAddr;
 
 }

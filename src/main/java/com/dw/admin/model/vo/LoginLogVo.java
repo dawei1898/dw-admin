@@ -39,7 +39,7 @@ public class LoginLogVo implements Serializable {
     /**
      * 登录 IP
      */
-    private String ipAddress;
+    private String ipAddr;
 
     /**
      * 登录IP归属地

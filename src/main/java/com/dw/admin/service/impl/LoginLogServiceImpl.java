@@ -69,7 +69,7 @@ public class LoginLogServiceImpl implements LoginLogService {
             DwaLoginLog loginLog = DwaLoginLog.builder()
                     .userId(loginUser.getUserId())
                     .username(loginUser.getUsername())
-                    .ipAddr(loginUser.getIpAddress())
+                    .ipAddr(loginUser.getIpAddr())
                     .loginLocation("")
                     .loginTime(LocalDateTime.now())
                     .os(os)
