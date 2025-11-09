@@ -94,8 +94,8 @@ public class LoginLogServiceImpl implements LoginLogService {
         queryWrapper.like(StringUtils.isNotBlank(param.getUsername()),
                 DwaLoginLog::getUsername, param.getUsername());
         // 登录 IP 糊搜索
-        queryWrapper.like(StringUtils.isNotBlank(param.getIpAddress()),
-                DwaLoginLog::getIpAddr, param.getIpAddress());
+        queryWrapper.like(StringUtils.isNotBlank(param.getIpAddr()),
+                DwaLoginLog::getIpAddr, param.getIpAddr());
 
         // 登录时间排序
         if (SortEnum.ASC.getCode().equalsIgnoreCase(param. getLoginTimeSort())) {

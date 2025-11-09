@@ -24,7 +24,7 @@ public class LoginLogPageParam extends PageParam implements Serializable {
     /**
      * 登录 IP
      */
-    private String ipAddress;
+    private String ipAddr;
 
     /**
      * 登录时间排序（asc：升序，desc：降序）
