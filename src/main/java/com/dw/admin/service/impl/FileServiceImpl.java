@@ -8,7 +8,8 @@ import com.dw.admin.common.enums.SortEnum;
 import com.dw.admin.common.utils.URLUtil;
 import com.dw.admin.common.utils.ValidateUtil;
 import com.dw.admin.components.oss.FileInfo;
-import com.dw.admin.components.oss.OssService;
+import com.dw.admin.components.storage.FileStorageService;
+import com.dw.admin.components.storage.FileStorageFactory;
 import com.dw.admin.dao.FileMapper;
 
 import com.dw.admin.model.entity.DwaFile;
@@ -34,7 +35,7 @@ import java.util.List;
 public class FileServiceImpl implements FileService {
 
     @Resource
-    private OssService ossService;
+    private FileStorageFactory storageFactory;
 
     @Resource
     private FileMapper fileMapper;
@@ -45,13 +46,14 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileInfo uploadFile(MultipartFile file, Long userId) {
         ValidateUtil.isNull(file, "文件内容不能为空！");
-        FileInfo fileInfo = ossService.uploadFile(file);
+        FileStorageService storageService = storageFactory.getStorageService();
+        FileInfo fileInfo = storageService.uploadFile(file);
         if (fileInfo == null) {
             return fileInfo;
         }
         if (StringUtils.isNotBlank(fileInfo.getPath())) {
             //  有权限的预览 URL
-            String presignedUrl = ossService.getPresignedUrl(fileInfo.getPath());
+            String presignedUrl = storageService.getPresignedUrl(fileInfo.getPath());
             fileInfo.setUrl(presignedUrl);
         }
 
@@ -87,7 +89,8 @@ public class FileServiceImpl implements FileService {
         ValidateUtil.isNull(dwaFile, "文件不存在！");
 
         if (StringUtils.isNotBlank(dwaFile.getFilePath())) {
-            ossService.downloadFile(dwaFile.getFilePath());
+            FileStorageService storageService = storageFactory.getStorageService();
+            storageService.downloadFile(dwaFile.getFilePath());
         }
         log.info("文件下载成功: {}", dwaFile.getFilePath());
     }
@@ -102,7 +105,8 @@ public class FileServiceImpl implements FileService {
             DwaFile exist = fileMapper.selectById(fileId);
             if (exist != null) {
                 // 删除存储文件
-                ossService.deleteFile(exist.getFilePath());
+                FileStorageService storageService = storageFactory.getStorageService();
+                storageService.deleteFile(exist.getFilePath());
                 // 删除文件信息
                 int i = fileMapper.deleteById(fileId);
                 if (i > 0) {
@@ -122,7 +126,8 @@ public class FileServiceImpl implements FileService {
      * @return 文件预签名URL
      */
     public String getPresignedUrl(String fileKey) {
-        return ossService.getPresignedUrl(fileKey);
+        FileStorageService storageService = storageFactory.getStorageService();
+        return storageService.getPresignedUrl(fileKey);
     }
 
 

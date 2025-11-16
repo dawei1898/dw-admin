@@ -8,6 +8,7 @@ import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.VoidResult;
 import com.dw.admin.common.exception.BizException;
+import com.dw.admin.components.storage.FileStorageService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +32,7 @@ import java.util.Date;
 
 @Slf4j
 @Component
-public class OssService {
+public class OssService implements FileStorageService {
 
     @Autowired
     private OssProperties ossProperties;
