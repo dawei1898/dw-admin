@@ -9,6 +9,9 @@ spring:
     url: jdbc:mysql://localhost:3306/dwa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
     username:
     password:
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 20
   servlet:
     multipart:
       max-request-size: 10MB
