@@ -1,454 +1,360 @@
-# DW Admin 后台管理系统 - 项目指导文档
+# DW Admin - iFlow CLI 项目文档
 
-## 项目概览
+## 项目概述
 
-DW Admin 是一个基于 Spring Boot 的现代化后台管理系统，采用微服务架构设计，提供完整的用户管理、权限控制、文件管理等功能。
+DW Admin 是一个基于 Spring Boot 3.x 的后台管理系统，提供用户管理、角色权限、文件存储、登录日志等核心功能。项目采用模块化设计，支持双重云存储（阿里云OSS和腾讯云COS）灵活切换。
 
-### 技术栈
+**核心特性：**
+- 用户认证与授权（JWT + RBAC）
+- 双重云存储支持（阿里云OSS/腾讯云COS）
+- 接口限流与日志记录
+- 权限管理（基于注解的AOP实现）
+- 支持Redis缓存和数据库缓存
+- 代码生成器（MyBatis-Plus）
 
-- **核心框架**: Spring Boot 3.5.6
-- **开发语言**: Java 21
-- **构建工具**: Maven
-- **数据库**: MySQL 8.0+
-- **ORM框架**: MyBatis Plus 3.5.14
-- **缓存**: Redis
-- **文件存储**: 阿里云 OSS
-- **安全认证**: JWT Token
-- **其他组件**: 
-  - Hutool 工具库
-  - FastJSON2
-  - Lombok
-  - Transmittable Thread Local
+## 技术栈
 
-## 项目架构
+### 核心技术
+- **Java 21** - 编程语言
+- **Spring Boot 3.5.6** - 应用框架
+- **MyBatis-Plus 3.5.14** - ORM框架
+- **MySQL 8.0+** - 关系型数据库
+- **Redis** - 缓存服务
 
-### 目录结构
+### 依赖库
+- **JWT (jjwt 0.12.6)** - 身份认证
+- **FastJSON2 (2.0.59)** - JSON处理
+- **Hutool (5.8.41)** - 工具类库
+- **Guava (33.4.6-jre)** - Google工具库
+- **Lombok (1.18.42)** - 减少样板代码
+- **Aliyun OSS SDK (3.18.2)** - 阿里云对象存储
+- **Tencent COS SDK (5.6.227)** - 腾讯云对象存储
+
+## 项目结构
 
 ```
-src/
-├── main/
-│   ├── java/com/dw/admin/
-│   │   ├── DwAdminApp.java                 # Spring Boot 启动类
-│   │   ├── common/                         # 通用组件
-│   │   │   ├── constant/                   # 常量定义
-│   │   │   ├── entity/                     # 通用实体类
-│   │   │   ├── enums/                      # 枚举类
-│   │   │   ├── exception/                  # 异常处理
-│   │   │   └── utils/                      # 工具类
-│   │   ├── components/                     # 核心组件
-│   │   │   ├── auth/                       # 认证组件
-│   │   │   ├── limiter/                    # 限流组件
-│   │   │   ├── log/                        # 日志组件
-│   │   │   ├── oss/                        # 文件存储组件
-│   │   │   ├── permission/                 # 权限组件
-│   │   │   └── redis/                      # Redis 组件
-│   │   ├── config/                         # 配置类
-│   │   ├── controller/                     # 控制器层
-│   │   ├── dao/                            # 数据访问层
-│   │   ├── model/                          # 数据模型
-│   │   │   ├── entity/                     # 实体类
-│   │   │   ├── param/                      # 请求参数
-│   │   │   └── vo/                         # 响应对象
-│   │   └── service/                        # 业务逻辑层
-│   │       └── impl/                       # 服务实现类
-│   └── resources/
-│       ├── application.yml                 # 应用配置
-│       ├── mapper/                         # MyBatis XML 文件
-│       └── logback/                        # 日志配置
-└── test/                                    # 测试代码
+src/main/java/com/dw/admin/
+├── DwAdminApp.java                 # 启动类
+├── common/                         # 公共模块
+│   ├── constant/                   # 常量定义
+│   ├── entity/                     # 通用实体（分页、响应）
+│   ├── enums/                      # 枚举类
+│   ├── exception/                  # 异常处理
+│   └── utils/                      # 工具类
+├── components/                     # 业务组件
+│   ├── auth/                       # 认证组件（JWT、Token管理）
+│   ├── generator/                  # 代码生成器
+│   ├── limiter/                    # 限流组件
+│   ├── log/                        # 日志组件（AOP）
+│   ├── permission/                 # 权限组件
+│   ├── redis/                      # Redis配置
+│   └── storage/                    # 存储服务（OSS/COS/本地）
+├── config/                         # 配置类
+├── controller/                     # 控制器层
+├── dao/                           # 数据访问层（Mapper）
+├── model/                         # 业务模型
+│   ├── entity/                     # 数据库实体
+│   ├── param/                      # 请求参数
+│   └── vo/                         # 视图对象
+└── service/                       # 服务层
+    └── impl/                       # 服务实现
+
+src/main/resources/
+├── application.yml                 # 主配置文件
+├── logback/                       # 日志配置
+└── mapper/                        # MyBatis XML映射文件
 ```
 
-### 核心功能模块
-
-1. **用户管理**: 注册、登录、用户信息CRUD
-2. **权限控制**: 基于注解的权限验证，支持角色和权限码双重控制
-3. **文件管理**: 阿里云OSS集成，支持文件上传下载
-4. **日志记录**: 自动记录操作日志
-5. **限流控制**: 基于IP的接口限流
-6. **登录日志**: 记录用户登录历史
-
-## 构建和运行
+## 构建与运行
 
 ### 环境要求
-
-- Java 21+
-- Maven 3.8+
+- JDK 21+
+- Maven 3.6+
 - MySQL 8.0+
-- Redis (可选，用于缓存)
-- 阿里云 OSS 账号(用于文件存储)
+- Redis 6.0+
 
-### 快速开始
-
-1. **克隆项目**
-   ```bash
-   git clone <repository-url>
-   cd dw-admin
-   ```
-
-2. **配置数据库**
-   - 创建MySQL数据库 `dwa`
-   - 修改 `src/main/resources/application.yml` 中的数据库连接信息
-
-3. **初始化数据库**
-   ```bash
-   mysql -u root -p dwa < docs/sql/init_ddl.sql
-   ```
-
-4. **启动应用**
-   ```bash
-   mvn spring-boot:run
-   ```
-
-5. **访问应用**
-   - 浏览器访问: http://localhost:8020
-   - 默认无管理账户，需先注册用户
-
-### 构建命令
-
-| 命令 | 说明 |
-|------|------|
-| `mvn clean` | 清理项目 |
-| `mvn compile` | 编译项目 |
-| `mvn test` | 运行测试 |
-| `mvn spring-boot:run` | 启动开发环境 |
-| `mvn install -Dmaven.test.skip=true` | 打包(跳过测试) |
-| `java -jar target/dw-admin-1.0.0.jar` | 运行JAR文件 |
-
-### 停止应用
+### 常用命令
 
 ```bash
+# 清理项目
+mvn clean
+
+# 编译项目
+mvn compile
+
+# 运行测试
+mvn test
+
+# 打包项目（跳过测试）
+mvn install -Dmaven.test.skip=true
+
+# 启动项目（开发模式）
+mvn spring-boot:run
+
+# 运行打包后的JAR文件
+java -jar target/dw-admin-1.0.0.jar
+
+# 停止项目
 ./stop.sh
 ```
 
-## 核心组件
+### 数据库初始化
 
-### 认证系统
-
-- **@Auth 注解**: 标记需要登录的接口
-- **JWT Token**: 无状态身份验证
-- **Token缓存**: 支持数据库和Redis缓存
-- **用户上下文**: ThreadLocal 存储当前用户信息
-
-### 权限系统
-
-- **@Permission 注解**: 权限验证
-- **角色控制**: 基于角色的访问控制(RBAC)
-- **权限码**: 细粒度权限控制
-- **缓存支持**: 权限信息本地缓存和Redis缓存
-
-### 限流系统
-
-- **@Limiter 注解**: 接口限流
-- **基于IP**: 支持基于IP地址的限流
-- **灵活配置**: 支持不同接口不同的限流策略
-
-### 日志系统
-
-- **@Log 注解**: 自动记录操作日志
-- **AOP实现**: 面向切面编程，无侵入性
-- **操作追踪**: 记录用户操作历史
-
-## 数据库设计
-
-### 核心表结构
-
-1. **dwa_user**: 用户表
-   - 用户基本信息(用户名、密码、邮箱、手机)
-   - 头像URL
-   - 创建和修改时间
-
-2. **dwa_role**: 角色表
-   - 角色基本信息
-   - 角色编码和名称
-
-3. **dwa_user_role**: 用户角色关联表
-   - 用户和角色的多对多关系
-
-4. **dwa_file**: 文件表
-   - 文件基本信息
-   - 存储路径和URL
-
-5. **dwa_login_log**: 登录日志表
-   - 登录时间、IP地址、用户ID
-
-## API 接口
-
-### 认证接口
-
-| 方法 | 路径 | 说明 | 限流 |
-|------|------|------|------|
-| POST | /user/register | 用户注册 | 1次/10秒 |
-| POST | /user/login | 用户登录 | 1次/2秒 |
-| DELETE | /user/logout | 退出登录 | - |
-
-### 用户管理接口
-
-| 方法 | 路径 | 说明 | 权限要求 |
-|------|------|------|----------|
-| GET | /user/{userId} | 查询用户信息 | @Auth |
-| GET | /user/query | 查询当前用户信息 | @Auth |
-| POST | /user/save | 保存用户 | @Auth + @Permission(roles="admin") |
-| POST | /user/update | 修改当前用户信息 | @Auth |
-| DELETE | /user/delete/{userId} | 删除用户 | @Auth + @Permission(roles="admin") |
-| POST | /user/list | 查询用户列表 | @Auth + @Permission(roles="admin") |
+```bash
+# 执行SQL脚本创建数据库和表结构
+mysql -u root -p < docs/sql/init_ddl.sql
+```
 
 ## 配置说明
 
-### 应用配置 (application.yml)
+### 核心配置（application.yml）
 
 ```yaml
 server:
-  port: 8020  # 服务端口
+  port: 8020                    # 服务端口
 
 spring:
-  application:
-    name: dw-admin-app  # 应用名称
-  datasource:  # 数据库配置
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
     url: jdbc:mysql://localhost:3306/dwa?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
-    username:  # 数据库用户名
-    password:  # 数据库密码
+    username:                   # 数据库用户名
+    password:                   # 数据库密码
 
-mybatis-plus:
-  mapperLocations: classpath:mapper/*.xml  # MyBatis XML文件路径
-
+# JWT认证配置
 dwa:
-  auth:  # 认证配置
-    cache-type: DB  # 缓存类型(DB/REDIS)
-    secret:  # JWT签名密钥
-  redis:  # Redis配置
+  auth:
+    cache-type: DB              # Token缓存类型：DB/REDIS
+    secret: your-secret-key     # JWT密钥
+  
+  # Redis配置
+  redis:
     url: localhost:6379
-    password: 
-  file:  # 文件存储配置
-    oss:
-      access-key:  # 阿里云OSS AccessKey
-      secret-key:  # 阿里云OSS SecretKey
-      endpoint:  # OSS Endpoint
-      bucket:  # OSS Bucket名称
-      prefix-path:  # 文件前缀路径
-      url-expires: 604800  # URL有效期(秒)
+    password:                   # Redis密码
+  
+  # 文件存储配置
+  storage:
+    provider: aliyun-oss        # 存储提供商：aliyun-oss/tencent-cos/local
+    aliyun-oss:                 # 阿里云OSS配置
+      access-key: xxxxxx
+      secret-key: xxxxxx
+      endpoint: xxxxxx.aliyuncs.com
+      bucket-name: xxxxxx
+    tencent-cos:                # 腾讯云COS配置
+      secret-id: xxxxxx
+      secret-key: xxxxxx
+      region: ap-beijing
+      bucket-name: xxxxxx
+    local:                      # 本地存储配置
+      preview-domain: http://127.0.0.1:8020
+      prefix-path: data/dwa/
 ```
 
-### 环境变量配置
+## 架构设计
 
-建议使用环境变量敏感配置:
+### 认证授权架构
+- **JWT Token**：基于jjwt实现的无状态认证
+- **Token缓存**：支持DB和Redis两种缓存方式
+- **RBAC模型**：基于角色的访问控制
+- **权限注解**：`@Permission` + AOP实现细粒度权限控制
 
-- `DB_USERNAME`: 数据库用户名
-- `DB_PASSWORD`: 数据库密码
-- `REDIS_PASSWORD`: Redis密码
-- `OSS_ACCESS_KEY`: 阿里云OSS AccessKey
-- `OSS_SECRET_KEY`: 阿里云OSS SecretKey
-- `AUTH_SECRET`: JWT签名密钥
+### 存储服务架构
+- **统一接口**：`FileStorageService`定义标准操作
+- **工厂模式**：`FileStorageFactory`根据配置动态选择服务商
+- **多实现**：`OssService`（阿里云）、`CosService`（腾讯云）、`LocalService`（本地）
+- **配置驱动**：通过`dwa.storage.provider`配置项切换
+
+### 核心组件设计
+
+#### 1. 认证组件（components/auth/）
+- `JwtUtils`：JWT生成与验证
+- `TokenCacheHelper`：Token缓存抽象
+- `TokenDBCacheHelper`：数据库Token缓存实现
+- `TokenRedisCacheHelper`：Redis Token缓存实现
+- `AuthAspect`：认证拦截AOP
+
+#### 2. 权限组件（components/permission/）
+- `PermissionAspect`：权限校验AOP
+- `PermissionCacheHelper`：权限缓存抽象
+- `UserContextHolder`：用户上下文（TransmittableThreadLocal）
+
+#### 3. 限流组件（components/limiter/）
+- `LimiterAspect`：限流拦截AOP
+- `LimiterProperties`：限流配置
+
+#### 4. 日志组件（components/log/）
+- `LogAspect`：操作日志记录AOP
 
 ## 开发规范
 
 ### 代码规范
+- 使用Lombok减少样板代码（@Data、@Builder等）
+- 统一使用FastJSON2进行JSON处理
+- 异常统一处理（GlobalExceptionHandler）
+- 接口统一返回Response<T>格式
 
-1. **包命名**: 使用反向域名命名，如 `com.dw.admin`
-2. **类命名**: 使用驼峰命名法，控制器以Controller结尾，服务以Service结尾
-3. **方法命名**: 使用驼峰命名法，增删改查分别使用save、delete、update、query前缀
-4. **注解使用**: 
-   - 使用 `@Auth` 标记需要登录的接口
-   - 使用 `@Permission` 标记需要权限的接口
-   - 使用 `@Log` 标记需要记录日志的接口
-   - 使用 `@Limiter` 标记需要限流的接口
+### 分层规范
+- **Controller**：只处理HTTP请求和响应
+- **Service**：业务逻辑层，可调用多个Mapper
+- **Dao/Mapper**：数据访问层，只处理单表操作
+- **Param**：请求参数封装（用于Controller）
+- **Vo**：视图对象（用于返回给前端）
 
-### 数据库规范
+### 命名规范
+- 数据库表：`dwa_`前缀（如dwa_user）
+- 实体类：与表名对应（如DwaUser）
+- Mapper接口：表名+Mapper（如UserMapper）
+- Service接口：业务名+Service（如UserService）
+- 配置类：`*Properties`或`*Config`后缀
 
-1. **表命名**: 使用小写字母和下划线，如 `dwa_user`
-2. **字段命名**: 使用小写字母和下划线，如 `user_name`
-3. **主键**: 使用Long类型自增ID
-4. **时间字段**: 使用 `create_time` 和 `update_time`
-5. **软删除**: 推荐使用 `@TableLogic` 实现软删除
+### 注解使用规范
+- `@Auth`：需要登录的接口
+- `@Permission`：需要特定权限的接口
+- `@Limiter`：需要限流的接口
+- `@Log`：需要记录操作日志的接口
 
-### 异常处理
+## API文档
 
-- 统一使用 `BizException` 抛出业务异常
-- 全局异常处理器 `GlobalExceptionHandler` 统一处理异常
-- 返回统一的 `Response` 格式
+### 用户管理模块
+- `POST /user/register` - 用户注册
+- `POST /user/login` - 用户登录
+- `GET /user/info` - 获取用户信息
+- `PUT /user/update` - 更新用户信息
+- `DELETE /user/{id}` - 删除用户
+- `GET /user/page` - 分页查询用户
 
-### 日志记录
+### 角色管理模块
+- `POST /role/add` - 添加角色
+- `PUT /role/update` - 更新角色
+- `DELETE /role/{id}` - 删除角色
+- `GET /role/page` - 分页查询角色
+- `POST /role/assign` - 分配角色给用户
 
-- 使用SLF4J进行日志记录
-- 在 `@Log` 注解标记的接口中自动记录操作日志
-- 日志级别: 开发环境使用DEBUG，生产环境使用INFO
+### 文件管理模块
+- `POST /file/upload` - 上传文件
+- `GET /file/preview/{fileId}` - 预览文件
+- `GET /file/download/{fileId}` - 下载文件
+- `DELETE /file/{fileId}` - 删除文件
+- `GET /file/page` - 分页查询文件
 
-## 部署指南
+### 登录日志模块
+- `GET /loginLog/page` - 分页查询登录日志
+- `DELETE /loginLog/{id}` - 删除登录日志
 
-### 生产环境配置
+## 测试
 
-1. **修改application.yml**
-   ```yaml
-   spring:
-     profiles:
-       active: prod
+### 单元测试
+```bash
+# 运行所有测试
+mvn test
+
+# 运行指定测试类
+mvn test -Dtest=UserServiceTest
+
+# 运行指定测试方法
+mvn test -Dtest=UserServiceTest#testLogin
+```
+
+### 测试类位置
+- `src/test/java/com/dw/admin/test/` - 测试主类
+- `src/test/java/com/dw/admin/test/storage/` - 存储服务测试
+
+## 部署
+
+### 生产环境部署
+
+1. **配置文件准备**
+   - 创建`application-prod.yml`生产环境配置
+   - 配置数据库、Redis、云存储等生产环境参数
+   - 使用环境变量管理敏感信息
+
+2. **打包部署**
+   ```bash
+   # 打包
+   mvn clean package -Dmaven.test.skip=true
+   
+   # 上传到服务器
+   scp target/dw-admin-1.0.0.jar user@server:/app/
+   
+   # 启动服务
+   nohup java -jar dw-admin-1.0.0.jar --spring.profiles.active=prod > app.log 2>&1 &
    ```
 
-2. **数据库配置**
-   - 使用生产环境数据库
-   - 配置数据库连接池参数
-
-3. **Redis配置**
-   - 配置Redis密码
-   - 调整缓存策略
-
-4. **日志配置**
-   - 配置日志输出到文件
-   - 设置合适的日志级别
-
-### 容器化部署
-
-创建Dockerfile:
-```dockerfile
-FROM openjdk:21-jre-slim
-COPY target/dw-admin-1.0.0.jar app.jar
-EXPOSE 8020
-ENTRYPOINT ["java","-jar","/app.jar"]
-```
-
-构建镜像:
-```bash
-mvn clean package -Dmaven.test.skip=true
-docker build -t dw-admin:latest .
-```
-
-运行容器:
-```bash
-docker run -d -p 8020:8020 \
-  -e DB_USERNAME=your_username \
-  -e DB_PASSWORD=your_password \
-  -e AUTH_SECRET=your_secret \
-  dw-admin:latest
-```
-
-## 性能优化
-
-### 缓存策略
-
-1. **权限缓存**: 权限信息缓存在本地或Redis
-2. **Token缓存**: 用户Token缓存减少数据库查询
-3. **配置缓存**: 系统配置信息缓存
-
-### 数据库优化
-
-1. **索引优化**: 为常用查询字段添加索引
-2. **分页查询**: 使用MyBatis Plus的分页插件
-3. **连接池**: 合理配置HikariCP连接池参数
-
-### 限流配置
-
-1. **接口限流**: 根据接口重要性和性能设置合适的限流策略
-2. **IP限制**: 防止恶意请求
-3. **用户限制**: 对单个用户的请求频率限制
-
-## 监控和运维
-
-### 健康检查
-
-- Spring Boot Actuator 集成
-- 数据库连接健康检查
-- Redis连接健康检查
-
-### 日志监控
-
-- 操作日志记录
-- 异常日志追踪
-- 登录日志监控
-
-### 性能监控
-
-- 接口响应时间监控
-- 数据库查询性能监控
-- 缓存命中率监控
-
-## 故障排查
-
-### 常见问题
-
-1. **数据库连接失败**
-   - 检查数据库服务是否启动
-   - 验证连接URL、用户名、密码
-   - 检查网络连接
-
-2. **Redis连接失败**
-   - 检查Redis服务是否启动
-   - 验证Redis配置
-   - 确认防火墙设置
-
-3. **JWT Token验证失败**
-   - 检查JWT密钥配置
-   - 验证Token格式
-   - 检查Token是否过期
-
-4. **阿里云OSS上传失败**
-   - 验证OSS配置信息
-   - 检查网络连接
-   - 确认Bucket权限设置
-
-### 调试技巧
-
-1. **启用DEBUG日志**
-   ```yaml
-   logging:
-     level:
-       com.dw.admin: DEBUG
+3. **Docker部署（推荐）**
+   ```dockerfile
+   FROM openjdk:21-jre-slim
+   COPY target/dw-admin-1.0.0.jar app.jar
+   ENTRYPOINT ["java", "-jar", "app.jar"]
    ```
 
-2. **使用Postman测试API**
-   - 设置正确的请求头
-   - 验证请求参数格式
+### 监控与日志
 
-3. **查看日志文件**
-   - 应用日志: `logs/` 目录
-   - 数据库日志: MySQL错误日志
-   - Redis日志: Redis日志文件
+- **日志配置**：`logback/logback-spring.xml`
+- **日志级别**：可通过配置调整（logging.level.com.dw.admin.dao=debug）
+- **日志路径**：默认输出到控制台和logs目录
 
-## 扩展开发
+## 扩展功能
 
-### 添加新功能
+### 1. 双重云存储支持
+项目已实现阿里云OSS和腾讯云COS的双重支持，通过配置`dwa.storage.provider`切换：
+- `aliyun-oss`：阿里云对象存储
+- `tencent-cos`：腾讯云对象存储
+- `local`：本地文件存储
 
-1. **创建实体类**: 在 `model/entity/` 目录下创建实体
-2. **创建Mapper**: 在 `dao/` 目录下创建Mapper接口
-3. **创建Service**: 在 `service/` 目录下创建服务接口和实现
-4. **创建Controller**: 在 `controller/` 目录下创建控制器
-5. **创建XML文件**: 在 `resources/mapper/` 目录下创建MyBatis XML
+详细设计方案见：`docs/双重云存储支持设计方案.md`
 
-### 自定义组件
+### 2. 代码生成器
+使用MyBatis-Plus代码生成器快速生成CRUD代码：
+```java
+// 在components/generator/CodeGenerator.java中配置生成参数
+```
 
-1. **AOP组件**: 继承现有的组件模式
-2. **工具类**: 在 `common/utils/` 目录下添加
-3. **配置类**: 在 `config/` 目录下添加
-4. **常量定义**: 在 `common/constant/` 目录下添加
+### 3. 权限管理扩展
+- 支持接口级别权限控制（@Permission注解）
+- 支持权限缓存（Redis/本地缓存）
+- 支持动态权限配置
 
-## 安全建议
+## 常见问题
 
-1. **JWT密钥**: 使用强密钥并定期更换
-2. **数据库权限**: 最小权限原则
-3. **API限流**: 根据业务需求设置合理的限流策略
-4. **敏感信息**: 不在代码中硬编码敏感信息
-5. **HTTPS**: 生产环境使用HTTPS协议
-6. **输入验证**: 严格验证用户输入
-7. **SQL注入**: 使用参数化查询
-8. **XSS防护**: 对输出内容进行转义
+### 1. Token过期问题
+- 默认Token有效期：7天
+- 可在`JwtUtils`中调整过期时间
+- 支持Token刷新机制
 
-## 版本更新
+### 2. 数据库连接问题
+- 检查数据库URL、用户名、密码配置
+- 确保MySQL服务正常运行
+- 检查防火墙端口（默认3306）
 
-### 升级指南
+### 3. Redis连接问题
+- 检查Redis地址和密码配置
+- 确保Redis服务正常运行
+- 检查防火墙端口（默认6379）
 
-1. **备份数据**: 升级前备份数据库
-2. **测试环境验证**: 先在测试环境验证
-3. **分步升级**: 逐步升级系统组件
-4. **功能验证**: 升级后验证所有功能
+### 4. 文件上传失败
+- 检查云存储配置（access-key、secret-key等）
+- 检查存储桶权限设置
+- 检查文件大小限制（默认5MB）
 
-### 兼容性说明
+## 相关文档
 
-- Java版本兼容性
-- Spring Boot版本兼容性
-- 数据库版本兼容性
-- 第三方库版本兼容性
+- `README.md` - 项目基本说明
+- `docs/双重云存储支持设计方案.md` - 云存储架构设计
+- `docs/sql/init_ddl.sql` - 数据库初始化脚本
+- `pom.xml` - Maven依赖配置
+
+## 版本信息
+
+- **当前版本**：1.0.0
+- **Java版本**：21
+- **Spring Boot**：3.5.6
+- **MyBatis-Plus**：3.5.14
+
+## 联系方式
+
+- **项目地址**：https://github.com/dawei1898/dw-admin
+- **问题反馈**：请通过GitHub Issues提交
 
 ---
 
-**联系方式**: 如有问题请联系开发团队
-
-**最后更新**: 2025-11-17
+**文档生成时间**：2025-11-18  
+**文档版本**：1.0  
+**维护者**：DW Admin开发团队
