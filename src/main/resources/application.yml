@@ -55,3 +55,8 @@ dwa:
       bucket-name: xxxxxx-1384986712
       prefix-path: xxxxxx/
       url-expires: 604800
+    # 本地存储
+    local:
+      preview-domain: http://127.0.0.1:8020
+      preview-path: /file/preview/
+      prefix-path: data/dwa/

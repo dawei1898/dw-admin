@@ -85,20 +85,21 @@ public class StorageUrlUtil {
                 URI uri = new URI(url);
                 // 获取查询部分
                 String query = uri.getQuery();
-
-                // 解码并分割查询参数
-                Map<String, String> params = new HashMap<>();
-                for (String param : query.split("&")) {
-                    String[] pair = param.split("=");
-                    String key = URLDecoder.decode(pair[0], StandardCharsets.UTF_8);
-                    String value = "";
-                    if (pair.length > 1) {
-                        value = URLDecoder.decode(pair[1], StandardCharsets.UTF_8);
+                if (StringUtils.isNotEmpty(query)) {
+                    // 解码并分割查询参数
+                    Map<String, String> params = new HashMap<>();
+                    for (String param : query.split("&")) {
+                        String[] pair = param.split("=");
+                        String key = URLDecoder.decode(pair[0], StandardCharsets.UTF_8);
+                        String value = "";
+                        if (pair.length > 1) {
+                            value = URLDecoder.decode(pair[1], StandardCharsets.UTF_8);
+                        }
+                        params.put(key, value);
                     }
-                    params.put(key, value);
+                    // 输出特定参数值
+                    return params.get(paramName);
                 }
-                // 输出特定参数值
-                return params.get(paramName);
             } catch (Exception e) {
                 log.error("Failed to getParamValue.", e);
             }

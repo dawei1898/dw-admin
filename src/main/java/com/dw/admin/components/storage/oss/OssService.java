@@ -67,7 +67,7 @@ public class OssService implements FileStorageService {
             String contentType = multipartFile.getContentType();
             Long fileId = IdUtil.getSnowflakeNextId();
             String originalFilename = multipartFile.getOriginalFilename();
-            String fileKey = ossProperties.getPrefixPath() + fileId + "-" + originalFilename;
+            String fileKey = ossProperties.getPrefixPath() + fileId + "_" + originalFilename;
 
             // 计算文件大小 单位：B
             long size = multipartFile.getSize();
@@ -127,7 +127,7 @@ public class OssService implements FileStorageService {
             String contentType = "";
             Long fileId = IdUtil.getSnowflakeNextId();
             String originalFilename = StringUtils.substringBefore(file.getName(), "?");;
-            String fileKey = ossProperties.getPrefixPath() + fileId + "-" + originalFilename;
+            String fileKey = ossProperties.getPrefixPath() + fileId + "_" + originalFilename;
 
             // 计算文件大小 单位：B
             long size = file.getTotalSpace();

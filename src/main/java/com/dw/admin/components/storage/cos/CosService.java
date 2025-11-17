@@ -68,7 +68,7 @@ public class CosService implements FileStorageService {
             String contentType = multipartFile.getContentType();
             Long fileId = IdUtil.getSnowflakeNextId();
             String originalFilename = multipartFile.getOriginalFilename();
-            String cosKey = storageProperties.getTencentCos().getPrefixPath() + fileId + "-" + originalFilename;
+            String cosKey = storageProperties.getTencentCos().getPrefixPath() + fileId + "_" + originalFilename;
 
             // 计算文件大小
             long size = multipartFile.getSize();
@@ -131,7 +131,7 @@ public class CosService implements FileStorageService {
             String contentType = "";
             Long fileId = IdUtil.getSnowflakeNextId();
             String originalFilename = StringUtils.substringBefore(file.getName(), "?");;
-            String cosKey = storageProperties.getTencentCos().getPrefixPath() + fileId + "-" + originalFilename;
+            String cosKey = storageProperties.getTencentCos().getPrefixPath() + fileId + "_" + originalFilename;
 
             // 计算文件大小
             long size = file.getTotalSpace();

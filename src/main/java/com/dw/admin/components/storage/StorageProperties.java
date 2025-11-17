@@ -15,7 +15,10 @@ import org.springframework.context.annotation.Configuration;
 public class StorageProperties {
 
     /**
-     * 存储提供商: aliyun-oss (阿里云对象存储), tencent-cos (腾讯云对象存储)
+     * 存储提供商:
+     * aliyun-oss (阿里云对象存储),
+     * tencent-cos (腾讯云对象存储),
+     * local (本地存储)
      */
     private String provider;
 
@@ -28,6 +31,12 @@ public class StorageProperties {
      * 腾讯云COS配置
      */
     private CosConfig tencentCos;
+
+    /**
+     * 本地存储配置
+     */
+    private LocalConfig local;
+
 
     @Data
     public static class OssConfig {
@@ -57,5 +66,17 @@ public class StorageProperties {
         private String prefixPath;
         /** url过期时间（s） */
         private Integer urlExpires;
+    }
+
+    @Data
+    public static class LocalConfig {
+        /** 文件预览域名 */
+        private String previewDomain;
+
+        /** 文件预览路径 */
+        private String previewPath;
+
+        /** 存储前缀路径 */
+        private String prefixPath;
     }
 }

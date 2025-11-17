@@ -19,4 +19,8 @@ public class StorageConstant {
     /** 存储提供商: 腾讯云对象存储 tencent-cos  */
     public static final String PROVIDER_TENCENT_COS = "tencent-cos";
 
+    /** 存储提供商: 本地存储 local  */
+    public static final String PROVIDER_LOCAL = "local";
+
+
 }
