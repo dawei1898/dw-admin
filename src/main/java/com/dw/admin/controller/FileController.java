@@ -5,7 +5,7 @@ import com.dw.admin.common.entity.Response;
 import com.dw.admin.components.auth.Auth;
 import com.dw.admin.components.auth.UserContextHolder;
 import com.dw.admin.components.log.Log;
-import com.dw.admin.components.oss.FileInfo;
+import com.dw.admin.components.storage.FileInfo;
 import com.dw.admin.model.param.FilePageParam;
 import com.dw.admin.model.vo.FileVo;
 import com.dw.admin.service.FileService;

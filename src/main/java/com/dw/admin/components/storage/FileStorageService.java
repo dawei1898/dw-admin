@@ -1,22 +1,31 @@
 package com.dw.admin.components.storage;
 
-import com.dw.admin.components.oss.FileInfo;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 /**
  * 统一文件存储服务接口
  *
- * @author dw-admin
+ * @author dawei
  */
 public interface FileStorageService {
 
     /**
      * 上传文件
      *
-     * @param multipartFile 文件信息
+     * @param multipartFile 前端传入文件信息
      * @return 文件存储信息
      */
     FileInfo uploadFile(MultipartFile multipartFile);
+
+    /**
+     * 上传本地文件
+     *
+     * @param file 本地文件
+     * @return 文件存储信息
+     */
+    FileInfo uploadFile(File file);
 
     /**
      * 下载文件

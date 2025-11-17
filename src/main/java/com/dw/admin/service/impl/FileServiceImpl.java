@@ -5,11 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dw.admin.common.entity.PageResult;
 import com.dw.admin.common.enums.SortEnum;
-import com.dw.admin.common.utils.URLUtil;
+import com.dw.admin.components.storage.StorageUrlUtil;
 import com.dw.admin.common.utils.ValidateUtil;
-import com.dw.admin.components.oss.FileInfo;
+import com.dw.admin.components.storage.FileInfo;
 import com.dw.admin.components.storage.FileStorageService;
-import com.dw.admin.components.storage.FileStorageFactory;
 import com.dw.admin.dao.FileMapper;
 
 import com.dw.admin.model.entity.DwaFile;
@@ -35,7 +34,7 @@ import java.util.List;
 public class FileServiceImpl implements FileService {
 
     @Resource
-    private FileStorageFactory storageFactory;
+    private FileStorageService fileStorageService;
 
     @Resource
     private FileMapper fileMapper;
@@ -46,19 +45,18 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileInfo uploadFile(MultipartFile file, Long userId) {
         ValidateUtil.isNull(file, "文件内容不能为空！");
-        FileStorageService storageService = storageFactory.getStorageService();
-        FileInfo fileInfo = storageService.uploadFile(file);
+        FileInfo fileInfo = fileStorageService.uploadFile(file);
         if (fileInfo == null) {
             return fileInfo;
         }
-        if (StringUtils.isNotBlank(fileInfo.getPath())) {
+       /* if (StringUtils.isNotBlank(fileInfo.getPath())) {
             //  有权限的预览 URL
-            String presignedUrl = storageService.getPresignedUrl(fileInfo.getPath());
+            String presignedUrl = fileStorageService.getPresignedUrl(fileInfo.getPath());
             fileInfo.setUrl(presignedUrl);
-        }
+        }*/
 
         // 过期时间
-        Integer expiresTime = URLUtil.getExpiresValue(fileInfo.getUrl());
+        Integer expiresTime = StorageUrlUtil.getExpiresValue(fileInfo.getUrl());
 
         // 保存文件信息
         DwaFile dwaFile = DwaFile.builder()
@@ -89,8 +87,7 @@ public class FileServiceImpl implements FileService {
         ValidateUtil.isNull(dwaFile, "文件不存在！");
 
         if (StringUtils.isNotBlank(dwaFile.getFilePath())) {
-            FileStorageService storageService = storageFactory.getStorageService();
-            storageService.downloadFile(dwaFile.getFilePath());
+            fileStorageService.downloadFile(dwaFile.getFilePath());
         }
         log.info("文件下载成功: {}", dwaFile.getFilePath());
     }
@@ -105,8 +102,7 @@ public class FileServiceImpl implements FileService {
             DwaFile exist = fileMapper.selectById(fileId);
             if (exist != null) {
                 // 删除存储文件
-                FileStorageService storageService = storageFactory.getStorageService();
-                storageService.deleteFile(exist.getFilePath());
+                fileStorageService.deleteFile(exist.getFilePath());
                 // 删除文件信息
                 int i = fileMapper.deleteById(fileId);
                 if (i > 0) {
@@ -126,8 +122,7 @@ public class FileServiceImpl implements FileService {
      * @return 文件预签名URL
      */
     public String getPresignedUrl(String fileKey) {
-        FileStorageService storageService = storageFactory.getStorageService();
-        return storageService.getPresignedUrl(fileKey);
+        return fileStorageService.getPresignedUrl(fileKey);
     }
 
 
@@ -158,7 +153,7 @@ public class FileServiceImpl implements FileService {
             return;
         }
         try {
-            if (URLUtil.isExpired(dwaFile.getFileUrl())) {
+            if (StorageUrlUtil.isExpired(dwaFile.getFileUrl())) {
                 String presignedUrl = this.getPresignedUrl(dwaFile.getFilePath());
                 if (StringUtils.isNotEmpty(presignedUrl)) {
                     dwaFile.setFileUrl(presignedUrl);
@@ -166,7 +161,7 @@ public class FileServiceImpl implements FileService {
                     DwaFile update = new DwaFile();
                     update.setFileId(dwaFile.getFileId());
                     update.setFileUrl(presignedUrl);
-                    update.setUrlExpires(URLUtil.getExpiresValue(presignedUrl));
+                    update.setUrlExpires(StorageUrlUtil.getExpiresValue(presignedUrl));
                     fileMapper.updateById(dwaFile);
                 }
             }

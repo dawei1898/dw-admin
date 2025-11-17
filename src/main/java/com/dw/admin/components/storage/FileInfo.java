@@ -1,4 +1,4 @@
-package com.dw.admin.components.oss;
+package com.dw.admin.components.storage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

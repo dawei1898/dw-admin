@@ -1,7 +1,7 @@
 package com.dw.admin.service;
 
 import com.dw.admin.common.entity.PageResult;
-import com.dw.admin.components.oss.FileInfo;
+import com.dw.admin.components.storage.FileInfo;
 import com.dw.admin.model.param.FilePageParam;
 import com.dw.admin.model.vo.FileVo;
 import org.springframework.web.multipart.MultipartFile;

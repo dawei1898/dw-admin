@@ -1,8 +1,7 @@
-package com.dw.admin.common.utils;
+package com.dw.admin.components.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -10,14 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * URL 工具类
+ * 文件存储 URL 工具类
  *
  * @author dawei
  */
 @Slf4j
-public class URLUtil {
+public class StorageUrlUtil {
 
-    public static final String EXPIRES_NAME  = "Expires";
+    /** oss url 过期参数名称 */
+    public static final String OSS_EXPIRES_NAME  = "Expires";
+
+    /** cos url 过期参数名称 */
+    public static final String COS_Q_SIGN_TIME  = "q-sign-time";
+
 
     /**
      * url 是否过期
@@ -25,9 +29,9 @@ public class URLUtil {
     public static boolean isExpired(String url) {
         if (StringUtils.isNotBlank( url)) {
             try {
-                String expires =  getParamValue(url, EXPIRES_NAME);
-                if (StringUtils.isNotEmpty(expires)) {
-                    long expiresTime = Long.parseLong(expires);
+                Integer expires =  getExpiresValue( url);
+                if (expires != null) {
+                    long expiresTime = Long.valueOf(expires);
                     long currentTime = System.currentTimeMillis() / 1000;
                     if (currentTime > expiresTime) {
                         log.info("CurrentTime:{}, ExpiresTime:{}, url 已过期.", currentTime, expiresTime);
@@ -45,11 +49,28 @@ public class URLUtil {
      * 从 URL 提取过期的值
      */
     public static Integer getExpiresValue(String url) {
-        if (StringUtils.isNotEmpty(url)) {
-            String expires = URLUtil.getParamValue(url, EXPIRES_NAME);
-            if (StringUtils.isNumeric(expires)) {
-                return Integer.parseInt(expires);
+        try {
+            if (StringUtils.isNotEmpty(url)) {
+                // 阿里云对象存储 OSS
+                // Expires=1755016584
+                String expires = StorageUrlUtil.getParamValue(url, OSS_EXPIRES_NAME);
+                if (StringUtils.isNotEmpty(expires)) {
+                    if (StringUtils.isNumeric(expires)) {
+                        return Integer.parseInt(expires);
+                    }
+                }
+                // 腾讯云对象存储 COS
+                // q-sign-time=1763384904;1763388504 (startTime;endTime)
+                String qSignTime = StorageUrlUtil.getParamValue(url, COS_Q_SIGN_TIME);
+                if (StringUtils.isNotEmpty(qSignTime)) {
+                    String[] times = StringUtils.split(qSignTime, ";");
+                    if (times.length == 2) {
+                        return Integer.parseInt(times[1]);
+                    }
+                }
             }
+        } catch (Exception e) {
+            log.error("Failed to getExpiresValue. url:{}. ", url, e);
         }
         return null;
     }
@@ -85,27 +106,5 @@ public class URLUtil {
         return "";
     }
 
-    /**
-     * 根据带参数的 URL 获取文件名
-     *
-     * url = "http://dwa-oss-bucket.oss-cn-hangzhou.aliyuncs.com/dwa/1952770676166279168/dog.png?Expires=1755016584&OSSAccessKeyId=LTAI5tAx1rNrvfzX7du91kGq&Signature=xP6j36U5XaiZk9n9qwxWzlCUuaY%3D";
-     */
-    public static String getFileName(String url) {
-        if (StringUtils.isNotBlank(url)) {
-            try {
-                URI uri = new URI(url);
-                String path = uri.getPath();
-                if (path != null) {
-                    int lastSlashIndex = path.lastIndexOf('/');
-                    if (lastSlashIndex != -1) {
-                        return path.substring(lastSlashIndex + 1);
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Failed to getFileName.", e);
-            }
-        }
-        return "";
-    }
 
 }

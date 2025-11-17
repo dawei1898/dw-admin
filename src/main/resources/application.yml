@@ -35,26 +35,23 @@ dwa:
   redis:
     url: localhost:6379
     password:
-  file:
-    # 文件存储配置
-    storage:
-      # 存储提供商: aliyun (阿里云), tencent (腾讯云)
-      provider: aliyun
-      
-      # 阿里云OSS配置
-      oss:
-        access-key: xxxxxx
-        secret-key: xxxxxx
-        endpoint: xxxxxx.aliyuncs.com
-        bucket: xxxxxx-oss-bucket
-        prefix-path: xxxxxx/
-        url-expires: 604800
-        
-      # 腾讯云COS配置
-      cos:
-        secret-id: xxxxxx
-        secret-key: xxxxxx
-        region: ap-beijing
-        bucket: xxxxxx-oss-bucket
-        prefix-path: xxxxxx/
-        url-expires: 604800
+  # 文件存储配置
+  storage:
+    # 存储提供商: aliyun-oss (阿里云对象存储), tencent-cos (腾讯云对象存储)
+    provider: aliyun-oss
+    # 阿里云OSS配置
+    aliyun-oss:
+      access-key: xxxxxx
+      secret-key: xxxxxx
+      endpoint: xxxxxx.aliyuncs.com
+      bucket-name: xxxxxx-oss-bucket
+      prefix-path: xxxxxx/
+      url-expires: 604800
+    # 腾讯云COS配置
+    tencent-cos:
+      secret-id: xxxxxx
+      secret-key: xxxxxx
+      region: ap-beijing
+      bucket-name: xxxxxx-1384986712
+      prefix-path: xxxxxx/
+      url-expires: 604800
