@@ -46,9 +46,5 @@ docker build -t dw-admin:1.0.0 .
 
 运行容器
 ```shell
-docker run -p 8020:8020 dw-admin:1.0.0
-```
-
-```shell
-docker run -p 8020:8020 -v $(pwd)/logs:/app/logs dw-admin:1.0.0
+docker run -p 8020:8020 -v $(pwd)/logs:/app/logs --name dw-admin  dw-admin:1.0.0
 ```

@@ -1,0 +1,15 @@
+# 基于打包好的 jar 来构建 image
+# 基础镜像(Linux + JDK21)
+FROM eclipse-temurin:21-jre-alpine-3.23
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制项目 jar 文件到容器中
+COPY target/*.jar app.jar
+
+# 暴露应用端口
+EXPOSE 8020
+
+# 启动应用
+ENTRYPOINT ["java", "-jar", "app.jar"]
