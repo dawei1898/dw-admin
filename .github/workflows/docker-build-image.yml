@@ -5,8 +5,9 @@
 name: Build & Push Docker Image
 
 on:
-  push:
-    branches: ['master']
+  # push 到 master 分支触发
+#  push:
+#    branches: ['master']
   # 页面手动触发
   workflow_dispatch:
 
