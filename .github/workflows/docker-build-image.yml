@@ -28,18 +28,11 @@ jobs:
       packages: write
 
     steps:
+      # 克隆仓库代码
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Build JAR
-        run: ./mvnw -B -DskipTests package
-
+      # 登录 GHCR
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -47,10 +40,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # 生成日期标签
+      - name: Generate date tag
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      # 从 Dockerfile 构建 Docker 镜像
+      # 推送四个标签：latest、commit SHA、日期、分支名
       - name: Build & Push Image
         uses: docker/build-push-action@v5
         with:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
             ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:${{ steps.date.outputs.date }}
