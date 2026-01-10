@@ -46,5 +46,5 @@ docker build -t dw-admin:1.0.0 .
 
 运行容器
 ```shell
-docker run -p 8020:8020 -v $(pwd)/logs:/app/logs --name dw-admin  dw-admin:1.0.0
+docker run -d -p 8020:8020 -v ./logs:/app/logs -e TZ=Asia/Shanghai  -e SPRING_PROFILES_ACTIVE=dev --name dw-admin dw-admin:1.0.0
 ```

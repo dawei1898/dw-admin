@@ -4,7 +4,7 @@ FROM eclipse-temurin:21-alpine-3.23 AS builder
 WORKDIR /build
 
 COPY . .
-RUN ./mvnw -B -DskipTests clean package
+RUN ./mvnw -B -DskipTests package
 
 # ---------- runtime ----------
 FROM eclipse-temurin:21-jre-alpine-3.23

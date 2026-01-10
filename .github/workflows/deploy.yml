@@ -1,16 +1,21 @@
 # 利用 Github Action 构建并推送镜像 到 Github package
 
+# 工作流配置：构建并推送Docker镜像到GitHub Container Registry
+# 触发条件：推送到master分支或手动触发
 name: Build & Push Docker Image
 
 on:
   push:
     branches: ['master']
+  # 页面手动触发
   workflow_dispatch:
 
+# 环境变量配置
+# REGISTRY: GitHub Container Registry地址
+# IMAGE_NAME: 镜像名称，使用当前仓库名
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  SVR_NAME: ${{ github.event.repository.name }}
 
 jobs:
   build:
