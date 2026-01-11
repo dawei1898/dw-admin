@@ -62,4 +62,4 @@ jobs:
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
-            ${{ variables.DOKPLOY_DW_ADMIN_WEBHOOK_URL2 }}
+            ${{ secrets.DOKPLOY_DW_ADMIN_WEBHOOK_URL }}
