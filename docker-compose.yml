@@ -7,6 +7,9 @@ services:
     container_name: dw-admin
     # 镜像
     image: ghcr.io/dawei1898/dw-admin:latest
+    # 网络
+#    networks:
+#      - 1panel-network
     # 端口映射 宿主机端口：容器内端口
     ports:
       - 8020:8020
@@ -15,9 +18,10 @@ services:
     # 挂载目录 宿主机目录：容器内目录
     volumes:
       - ./logs:/app/logs
+      - ./application-prod.yml:/app/application-prod.yml
     # 容器内工作目录
     working_dir: /app
     # 环境变量
     environment:
       - TZ=Asia/Shanghai
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod

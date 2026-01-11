@@ -57,3 +57,9 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ github.ref_name }}
             ghcr.io/${{ github.repository }}:${{ github.sha }}
             ghcr.io/${{ github.repository }}:${{ steps.date.outputs.date }}
+
+      - name: Trigger Dokploy Webhook
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            ${{ variables.DOKPLOY_DW_ADMIN_WEBHOOK_URL2 }}
