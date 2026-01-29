@@ -22,7 +22,7 @@ import java.util.List;
         name = PermissionConstant.PERMISSION_PROPERTIES_CACHE_TYPE,
         havingValue = PermissionConstant.CACHE_TYPE_REDIS
 )
-public class PermissionRedisCacheHelper implements PermissionCacheHelper{
+public class PermissionRedisCacheHelper implements PermissionCacheHelper {
 
     @Resource
     private PermissionProperties permissionProperties;
@@ -35,7 +35,8 @@ public class PermissionRedisCacheHelper implements PermissionCacheHelper{
     public List<String> getRoles(String userId) {
         if (StringUtils.isNotEmpty(userId)) {
             try {
-                String roleStr = jedis.get(userId);
+                String roleKey = buildRoleKey(userId);
+                String roleStr = jedis.get(roleKey);
                 if (StringUtils.isNotEmpty(roleStr)) {
                     return JSON.parseArray(roleStr, String.class);
                 }
@@ -50,8 +51,9 @@ public class PermissionRedisCacheHelper implements PermissionCacheHelper{
     public void putRoles(String userId, List<String> roleCodes) {
         if (StringUtils.isNotEmpty(userId) && roleCodes != null) {
             try {
-                jedis.set(userId, JSON.toJSONString(roleCodes));
-                jedis.expire(userId, permissionProperties.getExpireTime());
+                String roleKey = buildRoleKey(userId);
+                jedis.set(roleKey, JSON.toJSONString(roleCodes));
+                jedis.expire(roleKey, permissionProperties.getExpireTime());
             } catch (Exception e) {
                 log.error("Failed to putRoles", e);
             }
@@ -62,11 +64,22 @@ public class PermissionRedisCacheHelper implements PermissionCacheHelper{
     public void removeRoles(String userId) {
         if (StringUtils.isNotEmpty(userId)) {
             try {
-                jedis.del(userId);
+                String roleKey = buildRoleKey(userId);
+                jedis.del(roleKey);
             } catch (Exception e) {
                 log.error("Failed to removeRoles", e);
             }
         }
     }
+
+
+    private String buildRoleKey(String userId) {
+        return PermissionConstant.PERMISSION_ROLE_KEY_PREFIX + userId;
+    }
+
+    private String buildCodeKey(String userId) {
+        return PermissionConstant.PERMISSION_CODE_KEY_PREFIX + userId;
+    }
+
 
 }

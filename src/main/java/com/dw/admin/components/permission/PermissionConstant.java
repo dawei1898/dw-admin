@@ -27,6 +27,13 @@ public class PermissionConstant {
     /** 缓存失效时间(s) */
     public static final long DEFAULT_EXPIRE_TIME =  60;
 
+    /** 权限角色 redis key 前缀 */
+    public static final String PERMISSION_ROLE_KEY_PREFIX = "dw-admin:permission:role:";
+
+    /** 权限码 redis key 前缀 */
+    public static final String PERMISSION_CODE_KEY_PREFIX = "dw-admin:permission:code:";
+
+
 
 
 

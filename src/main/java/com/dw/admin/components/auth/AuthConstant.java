@@ -40,6 +40,10 @@ public class AuthConstant {
     /** 清除定时任务 */
     public static final String CLEAN_CRON = "0 0 1 * * ?";
 
+    /** 鉴权 redis key 前缀 */
+    public static final String AUTH_TOKEN_KEY_PREFIX = "dw-admin:auth:token:";
+
+
 
 
 

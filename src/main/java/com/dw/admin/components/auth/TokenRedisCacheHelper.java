@@ -76,7 +76,8 @@ public class TokenRedisCacheHelper implements TokenCacheHelper {
     private boolean hasOfRedis(String tokenId) {
         if (StringUtils.isNotEmpty(tokenId)) {
             try {
-                return jedis.exists(tokenId);
+                String tokenKey = buildTokenKey(tokenId);
+                return jedis.exists(tokenKey);
             } catch (Exception e) {
                 log.error("Failed to hasOfRedis", e);
             }
@@ -106,7 +107,8 @@ public class TokenRedisCacheHelper implements TokenCacheHelper {
     private void saveToRedis(String tokenId, String token) {
         if (!StringUtils.isAnyEmpty(tokenId, token)) {
             try {
-                jedis.setex(tokenId, authProperties.getExpireTime(), token);
+                String tokenKey = buildTokenKey(tokenId);
+                jedis.setex(tokenKey, authProperties.getExpireTime(), token);
             } catch (Exception e) {
                 log.error("Failed to saveToRedis", e);
             }
@@ -136,12 +138,17 @@ public class TokenRedisCacheHelper implements TokenCacheHelper {
     private boolean removeRedis(String tokenId) {
         if (StringUtils.isNotEmpty(tokenId)) {
             try {
-                return REDIS_SUCCESS == jedis.del(tokenId);
+                String tokenKey = buildTokenKey(tokenId);
+                return REDIS_SUCCESS == jedis.del(tokenKey);
             } catch (Exception e) {
                 log.error("Failed to removeRedis", e);
             }
         }
         return false;
+    }
+
+    private String buildTokenKey(String tokenId) {
+        return AuthConstant.AUTH_TOKEN_KEY_PREFIX + tokenId;
     }
 
 }
