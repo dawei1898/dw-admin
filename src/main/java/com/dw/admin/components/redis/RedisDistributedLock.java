@@ -2,7 +2,7 @@ package com.dw.admin.components.redis;
 
 
 import lombok.extern.slf4j.Slf4j;
-import redis.clients.jedis.JedisPooled;
+import redis.clients.jedis.RedisClient;
 import redis.clients.jedis.params.SetParams;
 
 import java.util.Collections;
@@ -25,7 +25,7 @@ import java.util.concurrent.locks.Lock;
 @Slf4j
 public class RedisDistributedLock implements Lock {
 
-    private final JedisPooled jedis;
+    private final RedisClient redisClient;
     private final String lockKey;
     private final String lockValue;
     private final long expireTime; // 锁的过期时间（毫秒）
@@ -60,12 +60,12 @@ public class RedisDistributedLock implements Lock {
     /**
      * 构造函数
      *
-     * @param jedis      Jedis 客户端
+     * @param redisClient      Jedis 客户端
      * @param lockKey    锁的键
      * @param expireTime 锁的过期时间（毫秒）
      */
-    public RedisDistributedLock(JedisPooled jedis, String lockKey, long expireTime) {
-        this.jedis = jedis;
+    public RedisDistributedLock(RedisClient redisClient, String lockKey, long expireTime) {
+        this.redisClient = redisClient;
         this.lockKey = lockKey;
         this.lockValue = UUID.randomUUID().toString();
         this.expireTime = expireTime;
@@ -122,7 +122,7 @@ public class RedisDistributedLock implements Lock {
                     .nx()  // 只有键不存在时才设置
                     .px(expireTime);  // 设置过期时间（毫秒）
 
-            String result = jedis.set(lockKey, lockValue, params);
+            String result = redisClient.set(lockKey, lockValue, params);
             boolean acquired = "OK".equals(result);
 
             if (acquired) {
@@ -163,7 +163,7 @@ public class RedisDistributedLock implements Lock {
      */
     private void renewLock() {
         try {
-            Object result = jedis.eval(
+            Object result = redisClient.eval(
                     RENEWAL_SCRIPT,
                     Collections.singletonList(lockKey),
                     java.util.Arrays.asList(lockValue, String.valueOf(expireTime))
@@ -233,7 +233,7 @@ public class RedisDistributedLock implements Lock {
             isLocked.set(false);
 
             // 使用 Lua 脚本原子性地检查并删除锁
-            Object result = jedis.eval(
+            Object result = redisClient.eval(
                     UNLOCK_SCRIPT,
                     Collections.singletonList(lockKey),
                     Collections.singletonList(lockValue)

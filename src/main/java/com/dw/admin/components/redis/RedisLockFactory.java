@@ -1,10 +1,10 @@
 package com.dw.admin.components.redis;
 
 
-import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.JedisPooled;
+import redis.clients.jedis.RedisClient;
 
 /**
  * Redis 分布式锁工厂
@@ -16,8 +16,8 @@ import redis.clients.jedis.JedisPooled;
 @ConditionalOnProperty(name = RedisConstant.REDIS_PROPERTIES_ENABLE, matchIfMissing = true)
 public class RedisLockFactory {
 
-    @Resource
-    private JedisPooled jedis;
+    @Autowired
+    private RedisClient redisClient;
 
     /**
      * 默认锁过期时间（30秒）
@@ -42,7 +42,7 @@ public class RedisLockFactory {
      * @return 分布式锁实例
      */
     public RedisDistributedLock createLock(String lockKey, long expireTime) {
-        return new RedisDistributedLock(jedis, lockKey, expireTime);
+        return new RedisDistributedLock(redisClient, lockKey, expireTime);
     }
 
     /**
@@ -55,6 +55,6 @@ public class RedisLockFactory {
      */
     public RedisDistributedLock createLock(String prefix, String lockKey, long expireTime) {
         String fullKey = prefix + ":" + lockKey;
-        return new RedisDistributedLock(jedis, fullKey, expireTime);
+        return new RedisDistributedLock(redisClient, fullKey, expireTime);
     }
 }

@@ -1,7 +1,6 @@
 package com.dw.admin.common.entity;
 
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 
@@ -31,12 +30,6 @@ public class PageParam<T> implements Serializable {
      */
     @Min(value = 1, message = "pageSize最小值为1")
     protected Integer pageSize = 10;
-
-    /**
-     * 附带的查询参数
-     */
-    @Valid
-    protected T param;
 
 
 

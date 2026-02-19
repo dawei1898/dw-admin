@@ -4,9 +4,10 @@ import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.JedisPooled;
+import redis.clients.jedis.RedisClient;
 
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class PermissionRedisCacheHelper implements PermissionCacheHelper {
     @Resource
     private PermissionProperties permissionProperties;
 
-    @Resource
-    private JedisPooled jedis;
+    @Autowired
+    private RedisClient redisClient;
 
 
     @Override
@@ -36,7 +37,7 @@ public class PermissionRedisCacheHelper implements PermissionCacheHelper {
         if (StringUtils.isNotEmpty(userId)) {
             try {
                 String roleKey = buildRoleKey(userId);
-                String roleStr = jedis.get(roleKey);
+                String roleStr = redisClient.get(roleKey);
                 if (StringUtils.isNotEmpty(roleStr)) {
                     return JSON.parseArray(roleStr, String.class);
                 }
@@ -52,8 +53,8 @@ public class PermissionRedisCacheHelper implements PermissionCacheHelper {
         if (StringUtils.isNotEmpty(userId) && roleCodes != null) {
             try {
                 String roleKey = buildRoleKey(userId);
-                jedis.set(roleKey, JSON.toJSONString(roleCodes));
-                jedis.expire(roleKey, permissionProperties.getExpireTime());
+                redisClient.set(roleKey, JSON.toJSONString(roleCodes));
+                redisClient.expire(roleKey, permissionProperties.getExpireTime());
             } catch (Exception e) {
                 log.error("Failed to putRoles", e);
             }
@@ -65,7 +66,7 @@ public class PermissionRedisCacheHelper implements PermissionCacheHelper {
         if (StringUtils.isNotEmpty(userId)) {
             try {
                 String roleKey = buildRoleKey(userId);
-                jedis.del(roleKey);
+                redisClient.del(roleKey);
             } catch (Exception e) {
                 log.error("Failed to removeRoles", e);
             }

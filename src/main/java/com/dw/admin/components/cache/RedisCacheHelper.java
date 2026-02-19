@@ -1,11 +1,11 @@
 package com.dw.admin.components.cache;
 
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.JedisPooled;
+import redis.clients.jedis.RedisClient;
 
 
 /**
@@ -22,8 +22,8 @@ import redis.clients.jedis.JedisPooled;
 public class RedisCacheHelper implements CacheHelper {
 
 
-    @Resource
-    private JedisPooled jedis;
+    @Autowired
+    private RedisClient redisClient;
 
 
     /**
@@ -36,7 +36,7 @@ public class RedisCacheHelper implements CacheHelper {
     public boolean exists(String key) {
         if (StringUtils.isNotEmpty(key)) {
             try {
-                return jedis.exists(key);
+                return redisClient.exists(key);
             } catch (Exception e) {
                 log.error("Failed to check exists for key: {}", key, e);
             }
@@ -54,7 +54,7 @@ public class RedisCacheHelper implements CacheHelper {
     public String get(String key) {
         if (StringUtils.isNotEmpty(key)) {
             try {
-                return jedis.get(key);
+                return redisClient.get(key);
             } catch (Exception e) {
                 log.error("Failed to get redis cache for key: {}", key, e);
             }
@@ -74,7 +74,7 @@ public class RedisCacheHelper implements CacheHelper {
             return;
         }
         try {
-            jedis.set(key, value);
+            redisClient.set(key, value);
         } catch (Exception e) {
             log.error("Failed to set redis cache for key: {}", key, e);
         }
@@ -93,7 +93,7 @@ public class RedisCacheHelper implements CacheHelper {
             return;
         }
         try {
-            jedis.setex(key, expireTimeSeconds, value);
+            redisClient.setex(key, expireTimeSeconds, value);
         } catch (Exception e) {
             log.error("Failed to set redis cache with expire time for key: {}", key, e);
         }
@@ -109,7 +109,7 @@ public class RedisCacheHelper implements CacheHelper {
     public boolean delete(String key) {
         if (StringUtils.isNotEmpty(key)) {
             try {
-                Long result = jedis.del(key);
+                Long result = redisClient.del(key);
                 return result > 0;
             } catch (Exception e) {
                 log.error("Failed to delete redis cache for key: {}", key, e);

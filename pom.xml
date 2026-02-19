@@ -94,7 +94,7 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>5.2.0</version>
+            <version>7.2.1</version>
         </dependency>
         <!-- aliyun-oss -->
         <dependency>

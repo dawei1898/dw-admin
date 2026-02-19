@@ -9,7 +9,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.ConnectionPoolConfig;
-import redis.clients.jedis.JedisPooled;
+import redis.clients.jedis.DefaultJedisClientConfig;
+import redis.clients.jedis.RedisClient;
 
 import java.time.Duration;
 
@@ -29,34 +30,39 @@ public class RedisConfig {
 
 
     @Bean
-    public JedisPooled jedis() {
-
-        String hostPot = redisProperties.getUrl().split(",")[0];
+    public RedisClient redisClient() {
+        String url = redisProperties.getUrl();
+        String hostPot = url.split(",")[0];
         String host = hostPot.split(":")[0];
         int port = Integer.parseInt(hostPot.split(":")[1]);
 
-        String password = redisProperties.getPassword();
+        String password = StringUtils.isNotBlank(redisProperties.getPassword())
+                ? redisProperties.getPassword() : null;
         int timeout = redisProperties.getTimeout();
+        DefaultJedisClientConfig jedisClientConfig = DefaultJedisClientConfig.builder()
+                .password(password)
+                .timeoutMillis(timeout)
+                .build();
 
+        // 连接池
         ConnectionPoolConfig poolConfig = new ConnectionPoolConfig();
         poolConfig.setMaxTotal(redisProperties.getMaxTotal());
         poolConfig.setMaxIdle(redisProperties.getMaxIdle());
         poolConfig.setMinIdle(redisProperties.getMinIdle());
         poolConfig.setMaxWait(Duration.ofMillis(redisProperties.getMaxWaitMillis()));
 
-        JedisPooled jedis = null;
+        RedisClient redisClient = null;
         try {
-            if (StringUtils.isEmpty(password)) {
-                jedis = new JedisPooled(poolConfig, host, port);
-                log.info("Jedis init finished.");
-            } else {
-                jedis = new JedisPooled(poolConfig, host, port, timeout, password);
-                log.info("Jedis init finished whit password.");
-            }
+            redisClient = RedisClient.builder()
+                    .hostAndPort(host, port)
+                    .clientConfig(jedisClientConfig)
+                    .poolConfig(poolConfig)
+                    .build();
+            log.info("RedisClient init finished.");
         } catch (Exception e) {
             log.error("Redis启动失败! ", e);
             //throw new RuntimeException(e);
         }
-        return jedis;
+        return redisClient;
     }
 }
