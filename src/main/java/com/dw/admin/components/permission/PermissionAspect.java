@@ -6,20 +6,16 @@ import com.dw.admin.common.entity.Response;
 import com.dw.admin.common.enums.RolesEnum;
 import com.dw.admin.common.exception.BizException;
 import com.dw.admin.components.auth.UserContextHolder;
-import com.dw.admin.service.RoleService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +35,7 @@ import java.util.List;
 public class PermissionAspect {
 
     @Resource
-    private RoleService roleServiceImpl;
+    private IRoleProvider roleProvider;
 
     @Resource
     private PermissionCacheHelper permissionCacheHelper;
@@ -63,7 +59,7 @@ public class PermissionAspect {
 
             List<String> roleCodes = permissionCacheHelper.getRoles(String.valueOf(userId));
             if (roleCodes == null) {
-                roleCodes = roleServiceImpl.queryRoleCodes(userId);
+                roleCodes = roleProvider.queryRoleCodes(userId);
                 if (roleCodes != null) {
                     permissionCacheHelper.putRoles(String.valueOf(userId), roleCodes);
                 }
